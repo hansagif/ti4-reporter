@@ -1,0 +1,97 @@
+game_id,game_name,status,player_name,race,victory_points,ranking,winner,pick_order,speaker
+G01,Game 1,finished,Edi,Titans of Ul,9,5,false,1,true
+G01,Game 1,finished,Keyser,Deepwrought Scholarate,9,3,false,2,false
+G01,Game 1,finished,Hektor,Universities of Jol-Nar,10,1,true,3,false
+G01,Game 1,finished,Branea,Arborec,0,6,false,4,false
+G01,Game 1,finished,Ioan,L1Z1X Mindnet,9,4,false,5,false
+G01,Game 1,finished,jarodtou,Mentak Coalition,9,2,false,6,false
+G02,Game 2,finished,Morthai,The Last Bastion,8,4,false,1,true
+G02,Game 2,finished,jarodtou,Argent Flight,8,5,false,2,false
+G02,Game 2,finished,Hektor,Naaz-Rokha Alliance,9,2,false,3,false
+G02,Game 2,finished,Branea,Embers of Muaat,10,1,true,4,false
+G02,Game 2,finished,adrim,Naalu Collective,8,3,false,5,false
+G02,Game 2,finished,Ioan,Vuil'raith Cabal,7,6,false,6,false
+G03,Game 3,finished,Hektor,Vuil'raith Cabal,5,6,false,1,true
+G03,Game 3,finished,Ioan,Naaz-Rokha Alliance,7,4,false,2,false
+G03,Game 3,finished,Edi,Nomad,9,2,false,3,false
+G03,Game 3,finished,jarodtou,Universities of Jol-Nar,7,5,false,4,false
+G03,Game 3,finished,Branea,Ghosts of Creuss,9,3,false,5,false
+G03,Game 3,finished,Keyser,Clan of Saar,10,1,true,6,false
+G04,Game 4,finished,Ioan,Council Keleres,10,1,true,1,true
+G04,Game 4,finished,Edi,Federation of Sol,7,5,false,2,false
+G04,Game 4,finished,Branea,L1Z1X Mindnet,9,3,false,3,false
+G04,Game 4,finished,Ciupi,Emirates of Hacan,8,4,false,4,false
+G04,Game 4,finished,Hektor,Ghosts of Creuss,9,2,false,5,false
+G04,Game 4,finished,Morthai,Vuil'raith Cabal,7,6,false,6,false
+G05,Game 5,finished,Hektor,Embers of Muaat,9,3,false,1,true
+G05,Game 5,finished,Ciupi,Argent Flight,9,2,false,2,false
+G05,Game 5,finished,jarodtou,Naalu Collective,8,4,false,3,false
+G05,Game 5,finished,Titelandru,Yin Brotherhood,10,1,true,4,false
+G05,Game 5,finished,Ioan,Titans of Ul,6,6,false,5,false
+G05,Game 5,finished,Keyser,Mahact Gene-Sorcerers,7,5,false,6,false
+G06,Game 6,finished,Ioan,Mentak Coalition,5,6,false,1,true
+G06,Game 6,finished,Ciupi,Vuil'raith Cabal,9,2,false,2,false
+G06,Game 6,finished,Zuicky,Winnu,8,3,false,3,false
+G06,Game 6,finished,jarodtou,L1Z1X Mindnet,10,1,true,4,false
+G06,Game 6,finished,Edi,Titans of Ul,8,4,false,5,false
+G06,Game 6,finished,lyxye,Barony of Letnev,7,5,false,6,false
+G07,Game 7,finished,Hektor,Xxcha Kingdom,8,4,false,1,true
+G07,Game 7,finished,Ioan,Naalu Collective,6,5,false,2,false
+G07,Game 7,finished,Syll,The Last Bastion,8,3,false,3,false
+G07,Game 7,finished,Titelandru,Mentak Coalition,5,6,false,4,false
+G07,Game 7,finished,Keyser,Vuil'raith Cabal,8,2,false,5,false
+G07,Game 7,finished,Branea,Winnu,10,1,true,6,false
+G08,Game 8,finished,Edi,Arborec,8,5,false,1,true
+G08,Game 8,finished,jarodtou,Crimson,8,3,false,2,false
+G08,Game 8,finished,Branea,Nomad,10,1,true,3,false
+G08,Game 8,finished,adrim,Federation of Sol,9,2,false,4,false
+G08,Game 8,finished,Titelandru,Emirates of Hacan,7,6,false,5,false
+G08,Game 8,finished,Ioan,Empyrean,8,4,false,6,false
+G09,Game 9,finished,Hektor,Federation of Sol,10,1,true,1,true
+G09,Game 9,finished,Ciupi,Emirates of Hacan,6,3,false,2,false
+G09,Game 9,finished,Titelandru,Empyrean,7,2,false,3,false
+G09,Game 9,finished,jarodtou,Winnu,5,5,false,4,false
+G09,Game 9,finished,Ioan,Sardakk N'orr,4,6,false,5,false
+G09,Game 9,finished,Morthai,The Last Bastion,5,4,false,6,false
+G10,Game 10,finished,Edi,Vuil'raith Cabal,8,5,false,1,true
+G10,Game 10,finished,jarodtou,Regal Authority of Ral-Nel,9,2,false,2,false
+G10,Game 10,finished,VladC,Federation of Sol,8,3,false,3,false
+G10,Game 10,finished,Ioan,Embers of Muaat,6,6,false,4,false
+G10,Game 10,finished,Ciupi,Ghosts of Creuss,8,4,false,5,false
+G10,Game 10,finished,Branea,Yssaril Tribes,10,1,true,6,false
+G11,Game 11,finished,Keyser,Empyrean,10,1,true,1,true
+G11,Game 11,finished,Zuicky,Embers of Muaat,8,4,false,2,false
+G11,Game 11,finished,Syll,Universities of Jol-Nar,7,5,false,3,false
+G11,Game 11,finished,jarodtou,Mahact Gene-Sorcerers,9,2,false,4,false
+G11,Game 11,finished,Branea,Yin Brotherhood,7,6,false,5,false
+G11,Game 11,finished,Hektor,Ghosts of Creuss,8,3,false,6,false
+G14,Game 14,finished,Ioan,Nomad,7,3,false,1,true
+G14,Game 14,finished,jarodtou,Federation of Sol,9,2,false,2,false
+G14,Game 14,finished,VladC,The Last Bastion,8,4,false,3,false
+G14,Game 14,finished,Ciupi,Firmament,6,5,false,4,false
+G14,Game 14,finished,Quacky,Emirates of Hacan,7,6,false,5,false
+G14,Game 14,finished,Edi,Ghosts of Creuss,10,1,true,6,false
+G12,Game 12,ongoing,VladC,Yin Brotherhood,4,6,false,1,true
+G12,Game 12,ongoing,Ciupi,Council Keleres,6,1,false,2,false
+G12,Game 12,ongoing,Edi,The Last Bastion,5,3,false,3,false
+G12,Game 12,ongoing,jarodtou,Arborec,5,2,false,4,false
+G12,Game 12,ongoing,lyxye,Xxcha Kingdom,4,5,false,5,false
+G12,Game 12,ongoing,Ioan,Universities of Jol-Nar,4,4,false,6,false
+G13,Game 13,ongoing,Ciupi,Arborec,5,6,false,1,true
+G13,Game 13,ongoing,Hektor,Nomad,6,3,false,2,false
+G13,Game 13,ongoing,Ioan,Empyrean,5,4,false,3,false
+G13,Game 13,ongoing,VladC,Council Keleres,8,1,false,4,false
+G13,Game 13,ongoing,Branea,L1Z1X Mindnet,5,5,false,5,false
+G13,Game 13,ongoing,adrim,Naalu Collective,6,2,false,6,false
+G15,Game 15,ongoing,Keyser,Yin Brotherhood,2,1,false,1,true
+G15,Game 15,ongoing,jarodtou,Sardakk N'orr,2,1,false,2,false
+G15,Game 15,ongoing,Ioan,Nekro Virus,1,1,false,3,false
+G15,Game 15,ongoing,Branea,Titans of Ul,2,1,false,4,false
+G15,Game 15,ongoing,Quacky,Xxcha Kingdom,0,1,false,5,false
+G15,Game 15,ongoing,Ciupi,The Last Bastion,2,1,false,6,false
+G16,Game 16,ongoing,Ciupi,Crimson,0,1,false,1,true
+G16,Game 16,ongoing,Hektor,Naalu Collective,0,1,false,2,false
+G16,Game 16,ongoing,jarodtou,Ghosts of Creuss,0,1,false,3,false
+G16,Game 16,ongoing,Quacky,Mentak Coalition,0,1,false,4,false
+G16,Game 16,ongoing,Syll,Mahact Gene-Sorcerers,0,1,false,5,false
+G16,Game 16,ongoing,Ioan,Sardakk N'orr,0,1,false,6,false

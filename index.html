@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TI4 Reporter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent2: #f0883e;
+            --green: #3fb950;
+            --red: #f85149;
+            --yellow: #d29922;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            color: var(--accent);
+        }
+
+        header h1 span {
+            color: var(--accent2);
+        }
+
+        nav {
+            display: flex;
+            gap: 0;
+            margin-left: 2rem;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        nav button:hover {
+            color: var(--text);
+        }
+
+        nav button.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        select,
+        input {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th,
+        td {
+            padding: 0.5rem 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--surface);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        th:hover {
+            color: var(--accent);
+        }
+
+        th.sort-asc::after {
+            content: ' ▲';
+            font-size: 0.7rem;
+        }
+
+        th.sort-desc::after {
+            content: ' ▼';
+            font-size: 0.7rem;
+        }
+
+        tr:hover td {
+            background: rgba(88, 166, 255, 0.05);
+        }
+
+        .winner {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .ongoing {
+            color: var(--yellow);
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .card h3 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .stat-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.8rem;
+            text-align: center;
+        }
+
+        .stat-box .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-box .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .filters label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-finished {
+            background: rgba(63, 185, 80, 0.15);
+            color: var(--green);
+        }
+
+        .badge-ongoing {
+            background: rgba(210, 153, 34, 0.15);
+            color: var(--yellow);
+        }
+
+        .player-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .player-card h3 {
+            color: var(--accent);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        td.num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        th.num {
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>TI4 <span>Reporter</span></h1>
+        <nav>
+            <button class="active" data-tab="standings">Standings</button>
+            <button data-tab="games">Game Reports</button>
+            <button data-tab="races">Race Stats</button>
+            <button data-tab="picks">Picks &amp; Bans</button>
+            <button data-tab="players">Player Sheets</button>
+        </nav>
+    </header>
+    <main>
+        <!-- Standings Tab -->
+        <div id="tab-standings" class="tab-content active">
+            <div class="filters">
+                <label>Show:</label>
+                <select id="standings-filter">
+                    <option value="all">All Games</option>
+                    <option value="finished">Finished Only</option>
+                    <option value="ongoing">Ongoing Only</option>
+                </select>
+            </div>
+            <table id="standings-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th data-sort="player">Player</th>
+                        <th class="num" data-sort="participation">Games</th>
+                        <th class="num" data-sort="finishedGames">Finished</th>
+                        <th class="num" data-sort="wins">Wins</th>
+                        <th class="num" data-sort="winrate">Win%</th>
+                        <th class="num" data-sort="bestScore">Best 600</th>
+                        <th class="num" data-sort="ptsPerGame">Pts/Game</th>
+                        <th class="num" data-sort="form">Form</th>
+                        <th class="num" data-sort="avgVP">Avg VP</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Game Reports Tab -->
+        <div id="tab-games" class="tab-content">
+            <div class="filters">
+                <label>Select Game:</label>
+                <select id="game-select"></select>
+            </div>
+            <div id="game-detail"></div>
+        </div>
+
+        <!-- Race Stats Tab -->
+        <div id="tab-races" class="tab-content">
+            <h2 style="margin-bottom:1rem; color:var(--text-muted); font-size:1rem;">Race Performance Overview</h2>
+            <table id="race-table">
+                <thead>
+                    <tr>
+                        <th data-sort="race">Race</th>
+                        <th class="num" data-sort="games">Played</th>
+                        <th class="num" data-sort="wins">Wins</th>
+                        <th class="num" data-sort="winrate">Win%</th>
+                        <th class="num" data-sort="bans">Bans</th>
+                        <th class="num" data-sort="notpicked">Not Picked</th>
+                        <th class="num" data-sort="presence">Draft Presence</th>
+                        <th class="num" data-sort="avgvp">Avg VP</th>
+                        <th class="num" data-sort="avgpts">Avg Pts</th>
+                        <th class="num" data-sort="bestvp">Best VP</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Picks & Bans Tab -->
+        <div id="tab-picks" class="tab-content">
+            <h2 style="margin-bottom:1rem; color:var(--text-muted); font-size:1rem;">Race Pick &amp; Ban Statistics</h2>
+            <table id="picks-table">
+                <thead>
+                    <tr>
+                        <th data-sort="race">Race</th>
+                        <th class="num" data-sort="picked">Picked</th>
+                        <th class="num" data-sort="banned">Banned</th>
+                        <th class="num" data-sort="notpicked">Not Picked</th>
+                        <th class="num" data-sort="presence">Presence</th>
+                        <th class="num" data-sort="pickrate">Pick%</th>
+                        <th class="num" data-sort="banrate">Ban%</th>
+                        <th class="num" data-sort="avgvp">Avg VP</th>
+                        <th class="num" data-sort="winrate">Win%</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Player Sheets Tab -->
+        <div id="tab-players" class="tab-content">
+            <div class="filters">
+                <label>Select Player:</label>
+                <select id="player-select">
+                    <option value="all">All Players</option>
+                </select>
+            </div>
+            <div id="player-sheets"></div>
+        </div>
+    </main>
+    <script>
+        let gamesData = [], bansData = [], playersData = [];
+
+        // --- League Scoring ---
+        const VP_POINTS = { 0: 0, 1: 0, 2: 1, 3: 3, 4: 6, 5: 10, 6: 16, 7: 24, 8: 34, 9: 46, 10: 68 };
+        const RANK_POINTS = { 1: 32, 2: 16, 3: 8, 4: 4, 5: 2, 6: 1 };
+
+        function calcVPPoints(vp) { return VP_POINTS[vp] || 0; }
+        function calcRankPoints(rank) { return RANK_POINTS[rank] || 0; }
+        function calcTotalPoints(vp, rank) { return calcVPPoints(vp) + calcRankPoints(rank); }
+
+        // --- Data Loading ---
+        async function loadCSV(path) {
+            const res = await fetch(path);
+            const text = await res.text();
+            return Papa.parse(text, { header: true, skipEmptyLines: true }).data;
+        }
+
+        async function init() {
+            gamesData = await loadCSV('data/games.csv');
+            bansData = await loadCSV('data/bans.csv');
+            playersData = await loadCSV('data/players.csv');
+            // Enrich game data with computed points
+            gamesData.forEach(r => {
+                r.vp = Number(r.victory_points);
+                r.rank = Number(r.ranking);
+                r.vpPts = calcVPPoints(r.vp);
+                r.rankPts = calcRankPoints(r.rank);
+                r.totalPts = r.vpPts + r.rankPts;
+            });
+            setupTabs();
+            renderStandings();
+            renderGameSelect();
+            renderRaceStats();
+            renderPicksBans();
+            renderPlayerSelect();
+        }
+
+        // --- Tab Navigation ---
+        function setupTabs() {
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+                });
+            });
+        }
+
+        // --- Standings ---
+        function getStandingsData(filter) {
+            const filtered = filter === 'all' ? gamesData :
+                gamesData.filter(r => r.status === filter);
+            const players = {};
+            gamesData.forEach(r => {
+                if (!players[r.player_name]) players[r.player_name] = {
+                    finishedPts: [], livePts: [], allPts: [], wins: 0,
+                    finishedGames: 0, ongoingGames: 0, totalVP: 0, totalGames: 0
+                };
+            });
+            filtered.forEach(r => {
+                const p = players[r.player_name];
+                if (!p) return;
+                p.totalGames++;
+                p.totalVP += r.vp;
+                if (r.status === 'finished') {
+                    p.finishedGames++;
+                    p.finishedPts.push(r.totalPts);
+                    if (r.winner === 'true') p.wins++;
+                } else {
+                    p.ongoingGames++;
+                }
+                p.livePts.push(r.totalPts);
+                p.allPts.push(r.totalPts);
+            });
+            return Object.entries(players).filter(([, p]) => p.totalGames > 0).map(([name, p]) => {
+                const totalPts = p.finishedPts.reduce((a, b) => a + b, 0);
+                const livePts = p.livePts.reduce((a, b) => a + b, 0);
+                const best6Finished = [...p.finishedPts].sort((a, b) => b - a).slice(0, 6).reduce((a, b) => a + b, 0);
+                const best6Live = [...p.livePts].sort((a, b) => b - a).slice(0, 6).reduce((a, b) => a + b, 0);
+                const lastFinished = p.finishedPts.length ? p.finishedPts[p.finishedPts.length - 1] : 0;
+                const prevFinished = p.finishedPts.length > 1 ? p.finishedPts[p.finishedPts.length - 2] : 0;
+                return {
+                    player: name,
+                    totalPts,
+                    livePts,
+                    finishedGames: p.finishedGames,
+                    participation: p.totalGames,
+                    wins: p.wins,
+                    winrate: p.finishedGames ? (p.wins / p.finishedGames * 100) : 0,
+                    ptsPerGame: p.finishedGames ? (totalPts / p.finishedGames) : 0,
+                    ptsPerGameLive: p.totalGames ? (livePts / p.totalGames) : 0,
+                    form: lastFinished - prevFinished,
+                    bestScore: best6Finished,
+                    bestScoreLive: best6Live,
+                    avgVP: p.totalGames ? (p.totalVP / p.totalGames) : 0,
+                    ongoingGames: p.ongoingGames
+                };
+            });
+        }
+
+        function renderStandings() {
+            const filter = document.getElementById('standings-filter').value;
+            const stats = getStandingsData(filter);
+            // Default sort by bestScore
+            if (!renderStandings._sortKey) renderStandings._sortKey = 'bestScore';
+            if (!renderStandings._sortDir) renderStandings._sortDir = -1;
+            const sortKey = renderStandings._sortKey;
+            const sortDir = renderStandings._sortDir;
+            const isStr = typeof stats[0]?.[sortKey] === 'string';
+            stats.sort((a, b) => isStr ? sortDir * a[sortKey].localeCompare(b[sortKey]) : sortDir * (a[sortKey] - b[sortKey]));
+
+            const tbody = document.querySelector('#standings-table tbody');
+            tbody.innerHTML = stats.map((s, i) => `<tr>
+        <td>${i + 1}</td>
+        <td>${s.player}</td>
+        <td class="num">${s.participation}</td>
+        <td class="num">${s.finishedGames}</td>
+        <td class="num">${s.wins}</td>
+        <td class="num">${s.winrate.toFixed(0)}%</td>
+        <td class="num">${s.bestScore}</td>
+        <td class="num">${s.ptsPerGame.toFixed(1)}</td>
+        <td class="num" style="color:${s.form > 0 ? 'var(--green)' : s.form < 0 ? 'var(--red)' : 'var(--text-muted)'}">${s.form > 0 ? '+' : ''}${s.form}</td>
+        <td class="num">${s.avgVP.toFixed(1)}</td>
+      </tr>`).join('');
+
+            // Column click sorting
+            const table = document.getElementById('standings-table');
+            table.querySelectorAll('th[data-sort]').forEach(th => {
+                th.onclick = () => {
+                    const key = th.dataset.sort;
+                    if (renderStandings._sortKey === key) {
+                        renderStandings._sortDir *= -1;
+                    } else {
+                        renderStandings._sortKey = key;
+                        renderStandings._sortDir = key === 'player' ? 1 : -1;
+                    }
+                    table.querySelectorAll('th').forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                    th.classList.add(renderStandings._sortDir === 1 ? 'sort-asc' : 'sort-desc');
+                    renderStandings();
+                };
+                // Show initial sort indicator
+                if (th.dataset.sort === sortKey) {
+                    th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+                }
+            });
+            document.getElementById('standings-filter').onchange = renderStandings;
+        }
+
+        // --- Game Reports ---
+        function renderGameSelect() {
+            const select = document.getElementById('game-select');
+            const gameIds = [...new Set(gamesData.map(r => r.game_id))];
+            // Sort by game number
+            gameIds.sort((a, b) => {
+                const na = parseInt(a.replace('G', ''));
+                const nb = parseInt(b.replace('G', ''));
+                return na - nb;
+            });
+            select.innerHTML = gameIds.map(id => {
+                const game = gamesData.find(r => r.game_id === id);
+                const status = game.status === 'ongoing' ? ' 🔴 LIVE' : ' ✅';
+                return `<option value="${id}">${game.game_name}${status}</option>`;
+            }).join('');
+            select.addEventListener('change', () => renderGameDetail(select.value));
+            if (gameIds.length) renderGameDetail(gameIds[0]);
+        }
+
+        function renderGameDetail(gameId) {
+            const rows = gamesData.filter(r => r.game_id === gameId);
+            const bans = bansData.filter(r => r.game_id === gameId);
+            if (!rows.length) return;
+            const game = rows[0];
+            const container = document.getElementById('game-detail');
+            const sorted = [...rows].sort((a, b) => a.rank - b.rank);
+            const statusBadge = game.status === 'ongoing'
+                ? '<span class="badge badge-ongoing">ONGOING</span>'
+                : '<span class="badge badge-finished">FINISHED</span>';
+            const gameBans = bans.filter(b => b.type === 'banned');
+            const gameUnpicked = bans.filter(b => b.type === 'not_picked');
+
+            container.innerHTML = `
+        <div class="card">
+          <h3>${game.game_name} ${statusBadge}</h3>
+          <p style="color:var(--text-muted); margin-bottom:0.5rem;">${rows.length} players</p>
+          <table>
+            <thead><tr><th>Rank</th><th>Player</th><th>Race</th><th class="num">VP</th><th class="num">VP Pts</th><th class="num">Rank Pts</th><th class="num">Total Pts</th><th class="num">Pick#</th><th>Speaker</th></tr></thead>
+            <tbody>
+              ${sorted.map(r => `<tr>
+                <td>${r.rank}</td>
+                <td class="${r.winner === 'true' ? 'winner' : ''}">${r.player_name} ${r.winner === 'true' ? '👑' : ''}</td>
+                <td>${r.race}</td>
+                <td class="num">${r.vp}</td>
+                <td class="num">${r.vpPts}</td>
+                <td class="num">${r.rankPts}</td>
+                <td class="num" style="font-weight:600">${r.totalPts}</td>
+                <td class="num">${r.pick_order}</td>
+                <td>${r.speaker === 'true' ? '🔊' : ''}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        ${gameBans.length ? `<div class="card"><h3>Banned Races</h3>
+          <p style="color:var(--text-muted)">${gameBans.map(b => b.race).join(', ')}</p></div>` : ''}
+        ${gameUnpicked.length ? `<div class="card"><h3>Not Picked</h3>
+          <p style="color:var(--text-muted)">${gameUnpicked.map(b => b.race).join(', ')}</p></div>` : ''}
+      `;
+        }
+
+        // --- Race Stats ---
+        function renderRaceStats() {
+            const races = {};
+            const totalGames = new Set(gamesData.map(r => r.game_id)).size;
+            gamesData.forEach(r => {
+                if (!races[r.race]) races[r.race] = { games: 0, wins: 0, totalVP: 0, totalPts: 0, bestVP: 0 };
+                const s = races[r.race];
+                s.games++;
+                if (r.winner === 'true') s.wins++;
+                s.totalVP += r.vp;
+                s.totalPts += r.totalPts;
+                if (r.vp > s.bestVP) s.bestVP = r.vp;
+            });
+            // Count bans and not-picked
+            const banCounts = {}, notPickedCounts = {};
+            bansData.forEach(b => {
+                if (b.type === 'banned') banCounts[b.race] = (banCounts[b.race] || 0) + 1;
+                if (b.type === 'not_picked') notPickedCounts[b.race] = (notPickedCounts[b.race] || 0) + 1;
+            });
+            const allRaces = new Set([...Object.keys(races), ...Object.keys(banCounts), ...Object.keys(notPickedCounts)]);
+            const stats = [...allRaces].map(race => {
+                const s = races[race] || { games: 0, wins: 0, totalVP: 0, totalPts: 0, bestVP: 0 };
+                const bans = banCounts[race] || 0;
+                const np = notPickedCounts[race] || 0;
+                return {
+                    race, games: s.games, wins: s.wins,
+                    winrate: s.games ? (s.wins / s.games * 100) : 0,
+                    bans, notpicked: np,
+                    presence: s.games + bans + np,
+                    avgvp: s.games ? (s.totalVP / s.games) : 0,
+                    avgpts: s.games ? (s.totalPts / s.games) : 0,
+                    bestvp: s.bestVP
+                };
+            }).sort((a, b) => b.games - a.games);
+
+            const tbody = document.querySelector('#race-table tbody');
+            tbody.innerHTML = stats.map(s => `<tr>
+        <td>${s.race}</td>
+        <td class="num">${s.games}</td>
+        <td class="num">${s.wins}</td>
+        <td class="num">${s.winrate.toFixed(0)}%</td>
+        <td class="num">${s.bans}</td>
+        <td class="num">${s.notpicked}</td>
+        <td class="num">${s.presence}</td>
+        <td class="num">${s.avgvp.toFixed(1)}</td>
+        <td class="num">${s.avgpts.toFixed(1)}</td>
+        <td class="num">${s.bestvp}</td>
+      </tr>`).join('');
+            makeSortable('race-table', stats);
+        }
+
+        // --- Picks & Bans ---
+        function renderPicksBans() {
+            const totalGames = new Set(gamesData.map(r => r.game_id)).size;
+            const picks = {};
+            gamesData.forEach(r => {
+                if (!picks[r.race]) picks[r.race] = { picked: 0, wins: 0, totalVP: 0 };
+                picks[r.race].picked++;
+                if (r.winner === 'true') picks[r.race].wins++;
+                picks[r.race].totalVP += r.vp;
+            });
+            const banCounts = {}, notPickedCounts = {};
+            bansData.forEach(b => {
+                if (b.type === 'banned') banCounts[b.race] = (banCounts[b.race] || 0) + 1;
+                if (b.type === 'not_picked') notPickedCounts[b.race] = (notPickedCounts[b.race] || 0) + 1;
+            });
+            const allRaces = new Set([...Object.keys(picks), ...Object.keys(banCounts), ...Object.keys(notPickedCounts)]);
+            const stats = [...allRaces].map(race => {
+                const p = picks[race] || { picked: 0, wins: 0, totalVP: 0 };
+                const banned = banCounts[race] || 0;
+                const np = notPickedCounts[race] || 0;
+                return {
+                    race, picked: p.picked, banned, notpicked: np,
+                    presence: p.picked + banned + np,
+                    pickrate: totalGames ? (p.picked / totalGames * 100) : 0,
+                    banrate: totalGames ? (banned / totalGames * 100) : 0,
+                    avgvp: p.picked ? (p.totalVP / p.picked) : 0,
+                    winrate: p.picked ? (p.wins / p.picked * 100) : 0
+                };
+            }).sort((a, b) => b.banned - a.banned);
+
+            const tbody = document.querySelector('#picks-table tbody');
+            tbody.innerHTML = stats.map(s => `<tr>
+        <td>${s.race}</td>
+        <td class="num">${s.picked}</td>
+        <td class="num">${s.banned}</td>
+        <td class="num">${s.notpicked}</td>
+        <td class="num">${s.presence}</td>
+        <td class="num">${s.pickrate.toFixed(0)}%</td>
+        <td class="num">${s.banrate.toFixed(0)}%</td>
+        <td class="num">${s.avgvp.toFixed(1)}</td>
+        <td class="num">${s.winrate.toFixed(0)}%</td>
+      </tr>`).join('');
+            makeSortable('picks-table', stats);
+        }
+
+        // --- Player Sheets ---
+        function renderPlayerSelect() {
+            const select = document.getElementById('player-select');
+            const names = [...new Set(gamesData.map(r => r.player_name))].sort();
+            select.innerHTML = '<option value="all">All Players</option>' +
+                names.map(n => `<option value="${n}">${n}</option>`).join('');
+            select.addEventListener('change', () => renderPlayerSheets(select.value));
+            renderPlayerSheets('all');
+        }
+
+        function renderPlayerSheets(filter) {
+            const container = document.getElementById('player-sheets');
+            const names = filter === 'all'
+                ? [...new Set(gamesData.map(r => r.player_name))].sort()
+                : [filter];
+
+            container.innerHTML = names.map(name => {
+                const rows = gamesData.filter(r => r.player_name === name);
+                const finished = rows.filter(r => r.status === 'finished');
+                const wins = finished.filter(r => r.winner === 'true').length;
+                const totalPts = finished.reduce((s, r) => s + r.totalPts, 0);
+                const livePts = rows.reduce((s, r) => s + r.totalPts, 0);
+                const avgVP = rows.length ? (rows.reduce((s, r) => s + r.vp, 0) / rows.length).toFixed(1) : '0';
+                const avgPts = finished.length ? (totalPts / finished.length).toFixed(1) : '0';
+                const racesPlayed = {};
+                rows.forEach(r => {
+                    if (!racesPlayed[r.race]) racesPlayed[r.race] = { count: 0, vp: 0, pts: 0, wins: 0 };
+                    racesPlayed[r.race].count++;
+                    racesPlayed[r.race].vp += r.vp;
+                    racesPlayed[r.race].pts += r.totalPts;
+                    if (r.winner === 'true') racesPlayed[r.race].wins++;
+                });
+
+                return `<div class="player-card">
+          <h3>${name}</h3>
+          <div class="stat-grid">
+            <div class="stat-box"><div class="value">${rows.length}</div><div class="label">Games</div></div>
+            <div class="stat-box"><div class="value">${finished.length}</div><div class="label">Finished</div></div>
+            <div class="stat-box"><div class="value">${wins}</div><div class="label">Wins</div></div>
+            <div class="stat-box"><div class="value">${finished.length ? (wins / finished.length * 100).toFixed(0) : 0}%</div><div class="label">Win Rate</div></div>
+            <div class="stat-box"><div class="value">${totalPts}</div><div class="label">Total Pts</div></div>
+            <div class="stat-box"><div class="value">${livePts}</div><div class="label">Live Pts</div></div>
+            <div class="stat-box"><div class="value">${avgPts}</div><div class="label">Avg Pts/Game</div></div>
+            <div class="stat-box"><div class="value">${avgVP}</div><div class="label">Avg VP</div></div>
+          </div>
+          <h4 style="margin-top:1rem; color:var(--text-muted); font-size:0.9rem;">Game History</h4>
+          <table>
+            <thead><tr><th>Game</th><th>Status</th><th>Race</th><th>VP</th><th>Rank</th><th>VP Pts</th><th>Rank Pts</th><th>Total Pts</th><th>Result</th></tr></thead>
+            <tbody>${rows.map(r => `<tr>
+              <td>${r.game_name}</td>
+              <td><span class="badge badge-${r.status}">${r.status}</span></td>
+              <td>${r.race}</td>
+              <td class="num">${r.vp}</td>
+              <td class="num">${r.rank}</td>
+              <td class="num">${r.vpPts}</td>
+              <td class="num">${r.rankPts}</td>
+              <td class="num" style="font-weight:600">${r.totalPts}</td>
+              <td class="${r.winner === 'true' ? 'winner' : ''}">${r.winner === 'true' ? '👑 Winner' : ''}</td>
+            </tr>`).join('')}</tbody>
+          </table>
+          <h4 style="margin-top:1rem; color:var(--text-muted); font-size:0.9rem;">Races Played</h4>
+          <table>
+            <thead><tr><th>Race</th><th class="num">Times</th><th class="num">Total VP</th><th class="num">Total Pts</th><th class="num">Wins</th></tr></thead>
+            <tbody>${Object.entries(racesPlayed).sort((a, b) => b[1].pts - a[1].pts).map(([race, d]) => `
+              <tr><td>${race}</td><td class="num">${d.count}</td><td class="num">${d.vp}</td><td class="num">${d.pts}</td><td class="num">${d.wins}</td></tr>
+            `).join('')}</tbody>
+          </table>
+        </div>`;
+            }).join('');
+        }
+
+        // --- Generic Sortable Tables ---
+        function makeSortable(tableId, data) {
+            const table = document.getElementById(tableId);
+            table.querySelectorAll('th[data-sort]').forEach(th => {
+                th.addEventListener('click', () => {
+                    const key = th.dataset.sort;
+                    const isStr = typeof data[0]?.[key] === 'string';
+                    const dir = th.classList.contains('sort-asc') ? -1 : 1;
+                    table.querySelectorAll('th').forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                    th.classList.add(dir === 1 ? 'sort-asc' : 'sort-desc');
+                    data.sort((a, b) => isStr ? dir * a[key].localeCompare(b[key]) : dir * (a[key] - b[key]));
+                    const tbody = table.querySelector('tbody');
+                    const headerCells = [...table.querySelectorAll('thead th')];
+                    const keys = headerCells.map(h => h.dataset.sort).filter(Boolean);
+                    tbody.innerHTML = data.map(row => {
+                        const cells = headerCells.map(h => {
+                            const k = h.dataset.sort;
+                            if (!k) return '';
+                            const v = row[k];
+                            const cls = h.classList.contains('num') ? ' class="num"' : '';
+                            if (typeof v === 'number' && !Number.isInteger(v)) return `<td${cls}>${v.toFixed(v < 1 ? 1 : (k.includes('rate') || k === 'winrate') ? 0 : 1)}${k.includes('rate') || k === 'winrate' || k === 'pickrate' || k === 'banrate' ? '%' : ''}</td>`;
+                            return `<td${cls}>${v}${k.includes('rate') || k === 'winrate' || k === 'pickrate' || k === 'banrate' ? '%' : ''}</td>`;
+                        });
+                        return `<tr>${cells.join('')}</tr>`;
+                    }).join('');
+                });
+            });
+        }
+
+        // --- Init ---
+        init();
+    </script>
+</body>
+
+</html>
