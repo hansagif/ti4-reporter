@@ -225,6 +225,11 @@
             color: var(--yellow);
         }
 
+        .badge-abandoned {
+            background: rgba(248, 81, 73, 0.15);
+            color: var(--red);
+        }
+
         .player-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -277,13 +282,14 @@
                     <tr>
                         <th>#</th>
                         <th data-sort="player">Player</th>
+                        <th class="num" data-sort="bestScore" title="Sum of points for the best 6 games">Best 600</th>
+                        <th class="num" data-sort="form" title="Deviation of last 3 finished games vs average points">
+                            Form</th>
                         <th class="num" data-sort="participation">Games</th>
                         <th class="num" data-sort="finishedGames">Finished</th>
                         <th class="num" data-sort="wins">Wins</th>
                         <th class="num" data-sort="winrate">Win%</th>
-                        <th class="num" data-sort="bestScore">Best 600</th>
                         <th class="num" data-sort="ptsPerGame">Pts/Game</th>
-                        <th class="num" data-sort="form">Form</th>
                         <th class="num" data-sort="avgVP">Avg VP</th>
                     </tr>
                 </thead>
@@ -406,13 +412,14 @@
 
         // --- Standings ---
         function getStandingsData(filter) {
-            const filtered = filter === 'all' ? gamesData :
-                gamesData.filter(r => r.status === filter);
+            const nonAbandoned = gamesData.filter(r => r.status !== 'abandoned');
+            const filtered = filter === 'all' ? nonAbandoned :
+                nonAbandoned.filter(r => r.status === filter);
             const players = {};
-            gamesData.forEach(r => {
+            nonAbandoned.forEach(r => {
                 if (!players[r.player_name]) players[r.player_name] = {
                     finishedPts: [], livePts: [], allPts: [], wins: 0,
-                    finishedGames: 0, ongoingGames: 0, totalVP: 0, totalGames: 0
+                    finishedGames: 0, ongoingGames: 0, totalVP: 0, finishedVP: 0, totalGames: 0
                 };
             });
             filtered.forEach(r => {
@@ -423,6 +430,7 @@
                 if (r.status === 'finished') {
                     p.finishedGames++;
                     p.finishedPts.push(r.totalPts);
+                    p.finishedVP += r.vp;
                     if (r.winner === 'true') p.wins++;
                 } else {
                     p.ongoingGames++;
@@ -437,6 +445,10 @@
                 const best6Live = [...p.livePts].sort((a, b) => b - a).slice(0, 6).reduce((a, b) => a + b, 0);
                 const lastFinished = p.finishedPts.length ? p.finishedPts[p.finishedPts.length - 1] : 0;
                 const prevFinished = p.finishedPts.length > 1 ? p.finishedPts[p.finishedPts.length - 2] : 0;
+                const avg = p.finishedGames ? (totalPts / p.finishedGames) : 0;
+                const last3 = p.finishedPts.slice(-3);
+                const last3Sum = last3.reduce((a, b) => a + b, 0);
+                const form = last3.length ? Math.round((last3Sum - (avg * last3.length)) / last3.length) : 0;
                 return {
                     player: name,
                     totalPts,
@@ -447,10 +459,10 @@
                     winrate: p.finishedGames ? (p.wins / p.finishedGames * 100) : 0,
                     ptsPerGame: p.finishedGames ? (totalPts / p.finishedGames) : 0,
                     ptsPerGameLive: p.totalGames ? (livePts / p.totalGames) : 0,
-                    form: lastFinished - prevFinished,
+                    form: form,
                     bestScore: best6Finished,
                     bestScoreLive: best6Live,
-                    avgVP: p.totalGames ? (p.totalVP / p.totalGames) : 0,
+                    avgVP: p.finishedGames ? (p.finishedVP / p.finishedGames) : 0,
                     ongoingGames: p.ongoingGames
                 };
             });
@@ -468,18 +480,22 @@
             stats.sort((a, b) => isStr ? sortDir * a[sortKey].localeCompare(b[sortKey]) : sortDir * (a[sortKey] - b[sortKey]));
 
             const tbody = document.querySelector('#standings-table tbody');
-            tbody.innerHTML = stats.map((s, i) => `<tr>
+            tbody.innerHTML = stats.map((s, i) => {
+                const stars = '⭐'.repeat(s.wins);
+                const qualLine = i === 5 ? '<tr><td colspan="10" style="border-bottom:2px solid var(--accent2); padding:0;"></td></tr>' : '';
+                return `<tr>
         <td>${i + 1}</td>
-        <td>${s.player}</td>
+        <td>${s.player} ${stars}</td>
+        <td class="num">${s.bestScore}</td>
+        <td class="num" title="Deviation of median vs last 3 finished games" style="color:${s.form > 0 ? 'var(--green)' : s.form < 0 ? 'var(--red)' : 'var(--text-muted)'}">${s.form > 0 ? '+' : ''}${s.form}</td>
         <td class="num">${s.participation}</td>
         <td class="num">${s.finishedGames}</td>
         <td class="num">${s.wins}</td>
         <td class="num">${s.winrate.toFixed(0)}%</td>
-        <td class="num">${s.bestScore}</td>
         <td class="num">${s.ptsPerGame.toFixed(1)}</td>
-        <td class="num" style="color:${s.form > 0 ? 'var(--green)' : s.form < 0 ? 'var(--red)' : 'var(--text-muted)'}">${s.form > 0 ? '+' : ''}${s.form}</td>
         <td class="num">${s.avgVP.toFixed(1)}</td>
-      </tr>`).join('');
+      </tr>${qualLine}`;
+            }).join('');
 
             // Column click sorting
             const table = document.getElementById('standings-table');
@@ -516,7 +532,7 @@
             });
             select.innerHTML = gameIds.map(id => {
                 const game = gamesData.find(r => r.game_id === id);
-                const status = game.status === 'ongoing' ? ' 🔴 LIVE' : ' ✅';
+                const status = game.status === 'ongoing' ? ' 🔴 LIVE' : game.status === 'abandoned' ? ' ❌ ABANDONED' : ' ✅';
                 return `<option value="${id}">${game.game_name}${status}</option>`;
             }).join('');
             select.addEventListener('change', () => renderGameDetail(select.value));
@@ -532,7 +548,9 @@
             const sorted = [...rows].sort((a, b) => a.rank - b.rank);
             const statusBadge = game.status === 'ongoing'
                 ? '<span class="badge badge-ongoing">ONGOING</span>'
-                : '<span class="badge badge-finished">FINISHED</span>';
+                : game.status === 'abandoned'
+                    ? '<span class="badge badge-abandoned">ABANDONED</span>'
+                    : '<span class="badge badge-finished">FINISHED</span>';
             const gameBans = bans.filter(b => b.type === 'banned');
             const gameUnpicked = bans.filter(b => b.type === 'not_picked');
 
