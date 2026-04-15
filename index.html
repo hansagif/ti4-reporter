@@ -871,6 +871,15 @@
               <tr><td>${race}</td><td class="num">${d.count}</td><td class="num">${d.vp}</td><td class="num">${d.pts}</td><td class="num">${d.wins}</td></tr>
             `).join('')}</tbody>
           </table>
+          <h4 style="margin-top:1rem; color:var(--text-muted); font-size:0.9rem;">Races Not Played</h4>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.5rem;">
+            ${(() => {
+                        const allRaces = [...new Set(gamesData.map(r => r.race))].sort();
+                        const played = Object.keys(racesPlayed);
+                        const notPlayed = allRaces.filter(r => !played.includes(r));
+                        return notPlayed.length ? notPlayed.join(', ') : 'All races played!';
+                    })()}
+          </p>
         </div>`;
             }).join('');
         }
