@@ -71,39 +71,45 @@ G14,Game 14,finished,VladC,The Last Bastion,8,4,false,3,false
 G14,Game 14,finished,Ciupi,Firmament,6,5,false,4,false
 G14,Game 14,finished,Quacky,Emirates of Hacan,7,6,false,5,false
 G14,Game 14,finished,Edi,Ghosts of Creuss,10,1,true,6,false
-G12,Game 12,ongoing,VladC,Yin Brotherhood,5,6,false,1,true
-G12,Game 12,ongoing,Ciupi,Council Keleres,7,2,false,2,false
+G12,Game 12,ongoing,VladC,Yin Brotherhood,7,6,false,1,true
+G12,Game 12,ongoing,Ciupi,Council Keleres,8,4,false,2,false
 G12,Game 12,ongoing,Edi,The Last Bastion,9,1,false,3,false
-G12,Game 12,ongoing,Jarod,Arborec,6,4,false,4,false
-G12,Game 12,ongoing,Lyxye,Xxcha Kingdom,6,5,false,5,false
-G12,Game 12,ongoing,Ioan,Universities of Jol-Nar,6,3,false,6,false
+G12,Game 12,ongoing,Jarod,Arborec,8,5,false,4,false
+G12,Game 12,ongoing,Lyxye,Xxcha Kingdom,8,3,false,5,false
+G12,Game 12,ongoing,Ioan,Universities of Jol-Nar,9,2,false,6,false
 G13,Game 13,finished,Ciupi,Arborec,7,5,false,1,true
 G13,Game 13,finished,Hektor,Nomad,8,4,false,2,false
 G13,Game 13,finished,Ioan,Empyrean,6,6,false,3,false
 G13,Game 13,finished,VladC,Council Keleres,10,1,true,4,false
 G13,Game 13,finished,Branea,L1Z1X Mindnet,9,3,false,5,false
 G13,Game 13,finished,Adrim,Naalu Collective,9,2,false,6,false
-G15,Game 15,ongoing,Keyser,Yin Brotherhood,7,2,false,1,true
-G15,Game 15,ongoing,Jarod,Sardakk N'orr,7,3,false,2,false
-G15,Game 15,ongoing,Ioan,Nekro Virus,2,5,false,3,false
+G15,Game 15,ongoing,Keyser,Yin Brotherhood,7,3,false,1,true
+G15,Game 15,ongoing,Jarod,Sardakk N'orr,8,1,false,2,false
+G15,Game 15,ongoing,Ioan,Nekro Virus,3,5,false,3,false
 G15,Game 15,ongoing,Branea,Titans of Ul,6,4,false,4,false
-G15,Game 15,ongoing,Quacky,Xxcha Kingdom,1,6,false,5,false
-G15,Game 15,ongoing,Ciupi,The Last Bastion,7,1,false,6,false
-G16,Game 16,ongoing,Ciupi,Crimson,3,4,false,1,true
-G16,Game 16,ongoing,Hektor,Naalu Collective,3,3,false,2,false
-G16,Game 16,ongoing,Jarod,Ghosts of Creuss,2,6,false,3,false
-G16,Game 16,ongoing,Quacky,Mentak Coalition,4,1,false,4,false
-G16,Game 16,ongoing,Syll,Mahact Gene-Sorcerers,4,2,false,5,false
-G16,Game 16,ongoing,Ioan,Sardakk N'orr,2,5,false,6,false
+G15,Game 15,ongoing,Quacky,Xxcha Kingdom,3,6,false,5,false
+G15,Game 15,ongoing,Ciupi,The Last Bastion,7,2,false,6,false
+G16,Game 16,ongoing,Ciupi,Crimson,3,6,false,1,true
+G16,Game 16,ongoing,Hektor,Naalu Collective,5,1,false,2,false
+G16,Game 16,ongoing,Jarod,Ghosts of Creuss,4,3,false,3,false
+G16,Game 16,ongoing,Quacky,Mentak Coalition,5,2,false,4,false
+G16,Game 16,ongoing,Syll,Mahact Gene-Sorcerers,4,4,false,5,false
+G16,Game 16,ongoing,Ioan,Sardakk N'orr,3,5,false,6,false
 G17,Game 17,abandoned,Branea,Crimson,0,0,false,1,true
 G17,Game 17,abandoned,Ciupi,Naalu Collective,0,0,false,2,false
 G17,Game 17,abandoned,VladC,Ghosts of Creuss,0,0,false,3,false
 G17,Game 17,abandoned,Edi,Mentak Coalition,0,0,false,4,false
 G17,Game 17,abandoned,Quacky,Mahact Gene-Sorcerers,0,0,false,5,false
 G17,Game 17,abandoned,Ioan,Sardakk N'orr,0,0,false,6,false
-G18,Game 18,ongoing,Ciupi,Regal Authority of Ral-Nel,0,4,false,1,true
-G18,Game 18,ongoing,Branea,Mentak Coalition,0,3,false,2,false
-G18,Game 18,ongoing,Edi,Arborec,0,6,false,3,false
-G18,Game 18,ongoing,Jarod,Council Keleres,0,1,false,4,false
-G18,Game 18,ongoing,TonoSmen,Yin Brotherhood,0,2,false,5,false
-G18,Game 18,ongoing,VladC,Federation of Sol,0,5,false,6,false
+G18,Game 18,abandoned,Morthai,Regal Authority of Ral-Nel,0,0,false,1,true
+G18,Game 18,abandoned,Ciupi,Mentak Coalition,0,0,false,2,false
+G18,Game 18,abandoned,Edi,Arborec,0,0,false,3,false
+G18,Game 18,abandoned,Branea,Council Keleres,0,0,false,4,false
+G18,Game 18,abandoned,Zuicky,Yin Brotherhood,0,0,false,5,false
+G18,Game 18,abandoned,VladC,Federation of Sol,0,0,false,6,false
+G19,Game 19,ongoing,Ciupi,Regal Authority of Ral-Nel,4,4,false,1,true
+G19,Game 19,ongoing,Branea,Mentak Coalition,4,3,false,2,false
+G19,Game 19,ongoing,Edi,Arborec,3,6,false,3,false
+G19,Game 19,ongoing,Jarod,Council Keleres,4,1,false,4,false
+G19,Game 19,ongoing,TonoSmen,Yin Brotherhood,4,2,false,5,false
+G19,Game 19,ongoing,VladC,Federation of Sol,3,5,false,6,false

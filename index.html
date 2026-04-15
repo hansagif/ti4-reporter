@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TI4 Reporter</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <style>
         :root {
             --bg: #0d1117;
@@ -264,29 +265,26 @@
             <button data-tab="races">Race Stats</button>
             <button data-tab="picks">Picks &amp; Bans</button>
             <button data-tab="players">Player Sheets</button>
+            <button data-tab="charts">Charts</button>
+            <button data-tab="scoring">Scoring</button>
         </nav>
     </header>
     <main>
         <!-- Standings Tab -->
         <div id="tab-standings" class="tab-content active">
-            <div class="filters">
-                <label>Show:</label>
-                <select id="standings-filter">
-                    <option value="all">All Games</option>
-                    <option value="finished">Finished Only</option>
-                    <option value="ongoing">Ongoing Only</option>
-                </select>
-            </div>
             <table id="standings-table">
                 <thead>
                     <tr>
                         <th>#</th>
                         <th data-sort="player">Player</th>
                         <th class="num" data-sort="bestScore" title="Sum of points for the best 6 games">Best 600</th>
-                        <th class="num" data-sort="form" title="Deviation of last 3 finished games vs average points">
+                        <th class="num" title="Distance from player ahead">Lead</th>
+                        <th class="num" data-sort="form"
+                            title="Deviation of last 3 finished games vs your average points">Your Form</th>
+                        <th class="num" data-sort="avgForm"
+                            title="Deviation of last 3 finished games vs league average points from all players">Avg
                             Form</th>
-                        <th class="num" data-sort="participation">Games</th>
-                        <th class="num" data-sort="finishedGames">Finished</th>
+                        <th class="num" data-sort="finishedGames">Games</th>
                         <th class="num" data-sort="wins">Wins</th>
                         <th class="num" data-sort="winrate">Win%</th>
                         <th class="num" data-sort="ptsPerGame">Pts/Game</th>
@@ -359,6 +357,126 @@
             </div>
             <div id="player-sheets"></div>
         </div>
+
+        <!-- Charts Tab -->
+        <div id="tab-charts" class="tab-content">
+            <h2 style="margin-bottom:1rem; color:var(--text-muted); font-size:1rem;">Player Progression (Best 600)</h2>
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:1rem;">
+                <canvas id="progression-chart" height="400"></canvas>
+            </div>
+        </div>
+
+        <!-- Scoring Tab -->
+        <div id="tab-scoring" class="tab-content">
+            <h2 style="margin-bottom:1rem; color:var(--text-muted); font-size:1rem;">Pointing System</h2>
+            <p style="color:var(--text-muted); margin-bottom:1.5rem;">Total Points per Game = Victory Points Score (PA)
+                + Placement Score (PL)</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem; max-width:800px;">
+                <div class="card">
+                    <h3>Victory Points Score (PA)</h3>
+                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.8rem;">Points awarded based on
+                        VP achieved</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Victory Points</th>
+                                <th class="num">Score (PA)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1 VP</td>
+                                <td class="num">0</td>
+                            </tr>
+                            <tr>
+                                <td>2 VP</td>
+                                <td class="num">1</td>
+                            </tr>
+                            <tr>
+                                <td>3 VP</td>
+                                <td class="num">3</td>
+                            </tr>
+                            <tr>
+                                <td>4 VP</td>
+                                <td class="num">6</td>
+                            </tr>
+                            <tr>
+                                <td>5 VP</td>
+                                <td class="num">10</td>
+                            </tr>
+                            <tr>
+                                <td>6 VP</td>
+                                <td class="num">16</td>
+                            </tr>
+                            <tr>
+                                <td>7 VP</td>
+                                <td class="num">24</td>
+                            </tr>
+                            <tr>
+                                <td>8 VP</td>
+                                <td class="num">34</td>
+                            </tr>
+                            <tr>
+                                <td>9 VP</td>
+                                <td class="num">46</td>
+                            </tr>
+                            <tr style="color:var(--green); font-weight:600">
+                                <td>10 VP</td>
+                                <td class="num">68</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card">
+                    <h3>Placement Score (PL)</h3>
+                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.8rem;">Points awarded based on
+                        final ranking</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Placement</th>
+                                <th class="num">Score (PL)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>6th place</td>
+                                <td class="num">1</td>
+                            </tr>
+                            <tr>
+                                <td>5th place</td>
+                                <td class="num">2</td>
+                            </tr>
+                            <tr>
+                                <td>4th place</td>
+                                <td class="num">4</td>
+                            </tr>
+                            <tr>
+                                <td>3rd place</td>
+                                <td class="num">8</td>
+                            </tr>
+                            <tr>
+                                <td>2nd place</td>
+                                <td class="num">16</td>
+                            </tr>
+                            <tr style="color:var(--green); font-weight:600">
+                                <td>1st place</td>
+                                <td class="num">32</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card" style="max-width:800px; margin-top:1.5rem;">
+                <h3>Example</h3>
+                <p style="color:var(--text-muted); line-height:1.6;">
+                    A player who scores <span style="color:var(--accent)">10 VP</span> and finishes <span
+                        style="color:var(--accent)">1st</span> earns:<br>
+                    PA (68) + PL (32) = <span style="color:var(--green); font-weight:600">100 points</span> — the
+                    maximum possible per game.
+                </p>
+            </div>
+        </div>
     </main>
     <script>
         let gamesData = [], bansData = [], playersData = [];
@@ -396,6 +514,7 @@
             renderRaceStats();
             renderPicksBans();
             renderPlayerSelect();
+            renderProgressionChart();
         }
 
         // --- Tab Navigation ---
@@ -438,6 +557,10 @@
                 p.livePts.push(r.totalPts);
                 p.allPts.push(r.totalPts);
             });
+            // Calculate league-wide average points per finished game
+            const allFinished = nonAbandoned.filter(r => r.status === 'finished');
+            const leagueAvg = allFinished.length ? allFinished.reduce((s, r) => s + r.totalPts, 0) / allFinished.length : 0;
+
             return Object.entries(players).filter(([, p]) => p.totalGames > 0).map(([name, p]) => {
                 const totalPts = p.finishedPts.reduce((a, b) => a + b, 0);
                 const livePts = p.livePts.reduce((a, b) => a + b, 0);
@@ -449,6 +572,8 @@
                 const last3 = p.finishedPts.slice(-3);
                 const last3Sum = last3.reduce((a, b) => a + b, 0);
                 const form = last3.length ? Math.round((last3Sum - (avg * last3.length)) / last3.length) : 0;
+                const last3Avg = last3.length ? (last3Sum / last3.length) : 0;
+                const avgForm = last3.length ? Math.round(last3Avg - leagueAvg) : 0;
                 return {
                     player: name,
                     totalPts,
@@ -460,6 +585,7 @@
                     ptsPerGame: p.finishedGames ? (totalPts / p.finishedGames) : 0,
                     ptsPerGameLive: p.totalGames ? (livePts / p.totalGames) : 0,
                     form: form,
+                    avgForm: avgForm,
                     bestScore: best6Finished,
                     bestScoreLive: best6Live,
                     avgVP: p.finishedGames ? (p.finishedVP / p.finishedGames) : 0,
@@ -469,8 +595,7 @@
         }
 
         function renderStandings() {
-            const filter = document.getElementById('standings-filter').value;
-            const stats = getStandingsData(filter);
+            const stats = getStandingsData('finished');
             // Default sort by bestScore
             if (!renderStandings._sortKey) renderStandings._sortKey = 'bestScore';
             if (!renderStandings._sortDir) renderStandings._sortDir = -1;
@@ -482,13 +607,15 @@
             const tbody = document.querySelector('#standings-table tbody');
             tbody.innerHTML = stats.map((s, i) => {
                 const stars = '⭐'.repeat(s.wins);
-                const qualLine = i === 5 ? '<tr><td colspan="10" style="border-bottom:2px solid var(--accent2); padding:0;"></td></tr>' : '';
+                const qualLine = i === 5 ? '<tr><td colspan="11" style="border-bottom:2px solid var(--accent2); padding:0;"></td></tr>' : '';
+                const lead = i === 0 ? '-' : stats[i - 1].bestScore - s.bestScore;
                 return `<tr>
         <td>${i + 1}</td>
         <td>${s.player} ${stars}</td>
         <td class="num">${s.bestScore}</td>
-        <td class="num" title="Deviation of median vs last 3 finished games" style="color:${s.form > 0 ? 'var(--green)' : s.form < 0 ? 'var(--red)' : 'var(--text-muted)'}">${s.form > 0 ? '+' : ''}${s.form}</td>
-        <td class="num">${s.participation}</td>
+        <td class="num" style="color:var(--text-muted)">${lead === '-' ? '-' : lead}</td>
+        <td class="num" title="Deviation of last 3 finished games vs your average points" style="color:${s.form > 0 ? 'var(--green)' : s.form < 0 ? 'var(--red)' : 'var(--text-muted)'}">${s.form > 0 ? '+' : ''}${s.form}</td>
+        <td class="num" title="Deviation of last 3 finished games vs league average" style="color:${s.avgForm > 0 ? 'var(--green)' : s.avgForm < 0 ? 'var(--red)' : 'var(--text-muted)'}">${s.avgForm > 0 ? '+' : ''}${s.avgForm}</td>
         <td class="num">${s.finishedGames}</td>
         <td class="num">${s.wins}</td>
         <td class="num">${s.winrate.toFixed(0)}%</td>
@@ -517,7 +644,6 @@
                     th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
                 }
             });
-            document.getElementById('standings-filter').onchange = renderStandings;
         }
 
         // --- Game Reports ---
@@ -747,6 +873,77 @@
           </table>
         </div>`;
             }).join('');
+        }
+
+        // --- Progression Chart ---
+        function renderProgressionChart() {
+            const finished = gamesData.filter(r => r.status === 'finished');
+            // Get sorted unique game IDs
+            const gameIds = [...new Set(finished.map(r => r.game_id))];
+            gameIds.sort((a, b) => parseInt(a.replace('G', '')) - parseInt(b.replace('G', '')));
+            const gameLabels = gameIds.map(id => {
+                const g = finished.find(r => r.game_id === id);
+                return g ? g.game_name : id;
+            });
+
+            // For each player, compute cumulative best-6 score after each game
+            const players = [...new Set(finished.map(r => r.player_name))];
+            const colors = [
+                '#58a6ff', '#f0883e', '#3fb950', '#f85149', '#d29922',
+                '#a371f7', '#79c0ff', '#ffa657', '#7ee787', '#ff7b72',
+                '#e3b341', '#d2a8ff', '#56d4dd', '#f778ba', '#db61a2'
+            ];
+
+            const datasets = players.map((name, idx) => {
+                const playerGames = finished.filter(r => r.player_name === name);
+                const pts = []; // accumulated game points in order
+                const dataPoints = [];
+
+                gameIds.forEach(gid => {
+                    const row = playerGames.find(r => r.game_id === gid);
+                    if (row) pts.push(row.totalPts);
+                    // Best 6 sum so far
+                    const best6 = [...pts].sort((a, b) => b - a).slice(0, 6).reduce((a, b) => a + b, 0);
+                    dataPoints.push(row ? best6 : null);
+                });
+
+                return {
+                    label: name,
+                    data: dataPoints,
+                    borderColor: colors[idx % colors.length],
+                    backgroundColor: colors[idx % colors.length] + '20',
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    tension: 0.3,
+                    spanGaps: true
+                };
+            });
+
+            const ctx = document.getElementById('progression-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: { labels: gameLabels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#e6edf3', font: { size: 12 } }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#8b949e' },
+                            grid: { color: '#30363d' }
+                        },
+                        y: {
+                            ticks: { color: '#8b949e' },
+                            grid: { color: '#30363d' },
+                            title: { display: true, text: 'Best 600 Points', color: '#8b949e' }
+                        }
+                    }
+                }
+            });
         }
 
         // --- Generic Sortable Tables ---
