@@ -71,12 +71,12 @@ G14,Game 14,finished,VladC,The Last Bastion,8,4,false,3,false
 G14,Game 14,finished,Ciupi,Firmament,6,5,false,4,false
 G14,Game 14,finished,Quacky,Emirates of Hacan,7,6,false,5,false
 G14,Game 14,finished,Edi,Ghosts of Creuss,10,1,true,6,false
-G12,Game 12,ongoing,VladC,Yin Brotherhood,7,6,false,1,true
-G12,Game 12,ongoing,Ciupi,Council Keleres,8,4,false,2,false
-G12,Game 12,ongoing,Edi,The Last Bastion,9,1,false,3,false
-G12,Game 12,ongoing,Jarod,Arborec,8,5,false,4,false
-G12,Game 12,ongoing,Lyxye,Xxcha Kingdom,8,3,false,5,false
-G12,Game 12,ongoing,Ioan,Universities of Jol-Nar,9,2,false,6,false
+G12,Game 12,finished,VladC,Yin Brotherhood,7,6,false,1,true
+G12,Game 12,finished,Ciupi,Council Keleres,8,4,false,2,false
+G12,Game 12,finished,Edi,The Last Bastion,10,1,true,3,false
+G12,Game 12,finished,Jarod,Arborec,8,5,false,4,false
+G12,Game 12,finished,Lyxye,Xxcha Kingdom,8,3,false,5,false
+G12,Game 12,finished,Ioan,Universities of Jol-Nar,9,2,false,6,false
 G13,Game 13,finished,Ciupi,Arborec,7,5,false,1,true
 G13,Game 13,finished,Hektor,Nomad,8,4,false,2,false
 G13,Game 13,finished,Ioan,Empyrean,6,6,false,3,false
