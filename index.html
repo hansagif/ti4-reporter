@@ -822,14 +822,15 @@
 
             container.innerHTML = names.map(name => {
                 const rows = gamesData.filter(r => r.player_name === name);
+                const nonAbandoned = rows.filter(r => r.status !== 'abandoned');
                 const finished = rows.filter(r => r.status === 'finished');
                 const wins = finished.filter(r => r.winner === 'true').length;
                 const totalPts = finished.reduce((s, r) => s + r.totalPts, 0);
-                const livePts = rows.reduce((s, r) => s + r.totalPts, 0);
-                const avgVP = rows.length ? (rows.reduce((s, r) => s + r.vp, 0) / rows.length).toFixed(1) : '0';
+                const livePts = nonAbandoned.reduce((s, r) => s + r.totalPts, 0);
+                const avgVP = nonAbandoned.length ? (nonAbandoned.reduce((s, r) => s + r.vp, 0) / nonAbandoned.length).toFixed(1) : '0';
                 const avgPts = finished.length ? (totalPts / finished.length).toFixed(1) : '0';
                 const racesPlayed = {};
-                rows.forEach(r => {
+                nonAbandoned.forEach(r => {
                     if (!racesPlayed[r.race]) racesPlayed[r.race] = { count: 0, vp: 0, pts: 0, wins: 0 };
                     racesPlayed[r.race].count++;
                     racesPlayed[r.race].vp += r.vp;
@@ -840,7 +841,7 @@
                 return `<div class="player-card">
           <h3>${name}</h3>
           <div class="stat-grid">
-            <div class="stat-box"><div class="value">${rows.length}</div><div class="label">Games</div></div>
+            <div class="stat-box"><div class="value">${nonAbandoned.length}</div><div class="label">Games</div></div>
             <div class="stat-box"><div class="value">${finished.length}</div><div class="label">Finished</div></div>
             <div class="stat-box"><div class="value">${wins}</div><div class="label">Wins</div></div>
             <div class="stat-box"><div class="value">${finished.length ? (wins / finished.length * 100).toFixed(0) : 0}%</div><div class="label">Win Rate</div></div>
@@ -874,7 +875,7 @@
           <h4 style="margin-top:1rem; color:var(--text-muted); font-size:0.9rem;">Races Not Played</h4>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.5rem;">
             ${(() => {
-                        const allRaces = [...new Set(gamesData.map(r => r.race))].sort();
+                        const allRaces = [...new Set(gamesData.filter(r => r.status !== 'abandoned').map(r => r.race))].sort();
                         const played = Object.keys(racesPlayed);
                         const notPlayed = allRaces.filter(r => !played.includes(r));
                         return notPlayed.length ? notPlayed.join(', ') : 'All races played!';
