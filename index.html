@@ -80,7 +80,7 @@
 
         main {
             padding: 2rem;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
@@ -245,6 +245,11 @@
             margin-bottom: 1rem;
         }
 
+        td.player-highlight {
+            background: rgba(240, 136, 62, 0.35) !important;
+            outline: 1px solid var(--accent2);
+        }
+
         td.num {
             text-align: right;
             font-variant-numeric: tabular-nums;
@@ -261,6 +266,7 @@
         <h1>TI4 <span>Reporter</span></h1>
         <nav>
             <button class="active" data-tab="standings">Standings</button>
+            <button data-tab="overview">Games Overview</button>
             <button data-tab="games">Game Reports</button>
             <button data-tab="races">Race Stats</button>
             <button data-tab="picks">Picks &amp; Bans</button>
@@ -293,6 +299,30 @@
                 </thead>
                 <tbody></tbody>
             </table>
+        </div>
+
+        <!-- Games Overview Tab -->
+        <div id="tab-overview" class="tab-content">
+            <h2 style="margin-bottom:1rem; color:var(--text-muted); font-size:1rem;">All Games Overview</h2>
+            <div style="overflow-x:auto;">
+                <table id="overview-table">
+                    <thead>
+                        <tr>
+                            <th data-sort="game">Game</th>
+                            <th>1st</th>
+                            <th>2nd</th>
+                            <th>3rd</th>
+                            <th>4th</th>
+                            <th>5th</th>
+                            <th>6th</th>
+                            <th class="num" data-sort="totalVP">Total VP</th>
+                            <th class="num" data-sort="totalPts">Total Pts</th>
+                            <th class="num" data-sort="duration">Days</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
 
         <!-- Game Reports Tab -->
@@ -328,7 +358,8 @@
 
         <!-- Picks & Bans Tab -->
         <div id="tab-picks" class="tab-content">
-            <h2 style="margin-bottom:1rem; color:var(--text-muted); font-size:1rem;">Race Pick &amp; Ban Statistics</h2>
+            <h2 style="margin-bottom:1rem; color:var(--text-muted); font-size:1rem;">Race Pick &amp; Ban Statistics
+            </h2>
             <table id="picks-table">
                 <thead>
                     <tr>
@@ -360,7 +391,8 @@
 
         <!-- Charts Tab -->
         <div id="tab-charts" class="tab-content">
-            <h2 style="margin-bottom:1rem; color:var(--text-muted); font-size:1rem;">Player Progression (Best 600)</h2>
+            <h2 style="margin-bottom:1rem; color:var(--text-muted); font-size:1rem;">Player Progression (Best 600)
+            </h2>
             <div style="background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:1rem;">
                 <canvas id="progression-chart" height="400"></canvas>
             </div>
@@ -369,12 +401,14 @@
         <!-- Scoring Tab -->
         <div id="tab-scoring" class="tab-content">
             <h2 style="margin-bottom:1rem; color:var(--text-muted); font-size:1rem;">Pointing System</h2>
-            <p style="color:var(--text-muted); margin-bottom:1.5rem;">Total Points per Game = Victory Points Score (PA)
+            <p style="color:var(--text-muted); margin-bottom:1.5rem;">Total Points per Game = Victory Points Score
+                (PA)
                 + Placement Score (PL)</p>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem; max-width:800px;">
                 <div class="card">
                     <h3>Victory Points Score (PA)</h3>
-                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.8rem;">Points awarded based on
+                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.8rem;">Points awarded
+                        based on
                         VP achieved</p>
                     <table>
                         <thead>
@@ -429,7 +463,8 @@
                 </div>
                 <div class="card">
                     <h3>Placement Score (PL)</h3>
-                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.8rem;">Points awarded based on
+                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.8rem;">Points awarded
+                        based on
                         final ranking</p>
                     <table>
                         <thead>
@@ -510,6 +545,7 @@
             });
             setupTabs();
             renderStandings();
+            renderGamesOverview();
             renderGameSelect();
             renderRaceStats();
             renderPicksBans();
@@ -643,6 +679,95 @@
                 if (th.dataset.sort === sortKey) {
                     th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
                 }
+            });
+        }
+
+        // --- Games Overview ---
+        function renderGamesOverview() {
+            const gameIds = [...new Set(gamesData.map(r => r.game_id))];
+            gameIds.sort((a, b) => parseInt(a.replace('G', '')) - parseInt(b.replace('G', '')));
+
+            const rows = gameIds.map(gid => {
+                const players = gamesData.filter(r => r.game_id === gid);
+                const game = players[0];
+                const isAbandoned = game.status === 'abandoned';
+                const sorted = [...players].sort((a, b) => a.rank - b.rank);
+                const totalVP = isAbandoned ? 0 : players.reduce((s, r) => s + r.vp, 0);
+                const totalPts = isAbandoned ? 0 : players.reduce((s, r) => s + r.totalPts, 0);
+                const duration = game.duration_days ? Number(game.duration_days) : 0;
+                return { gid, game, sorted, totalVP, totalPts, isAbandoned, duration };
+            });
+
+            const tbody = document.querySelector('#overview-table tbody');
+            tbody.innerHTML = rows.map(r => {
+                const nameStyle = r.isAbandoned ? 'color:var(--red); font-weight:600' : '';
+                const raceCells = r.sorted.map(p => {
+                    const isWinner = p.winner === 'true';
+                    const style = isWinner ? 'color:var(--green); font-weight:600; white-space:nowrap' : 'white-space:nowrap';
+                    const shortRace = p.race.split(' ')[0];
+                    const label = `${p.player_name} (${shortRace})`;
+                    return `<td style="${style}" data-player="${p.player_name}">${label}</td>`;
+                }).join('');
+                // Pad to 6 columns if fewer players
+                const pad = Array(Math.max(0, 6 - r.sorted.length)).fill('<td></td>').join('');
+                return `<tr>
+                    <td style="${nameStyle}; white-space:nowrap">${r.game.game_name}</td>
+                    ${raceCells}${pad}
+                    <td class="num">${r.totalVP}</td>
+                    <td class="num">${r.totalPts}</td>
+                    <td class="num">${r.duration || '-'}</td>
+                </tr>`;
+            }).join('');
+
+            // Sorting
+            const table = document.getElementById('overview-table');
+            table.querySelectorAll('th[data-sort]').forEach(th => {
+                th.onclick = () => {
+                    const key = th.dataset.sort;
+                    const dir = th.classList.contains('sort-asc') ? -1 : 1;
+                    table.querySelectorAll('th').forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                    th.classList.add(dir === 1 ? 'sort-asc' : 'sort-desc');
+                    if (key === 'game') {
+                        rows.sort((a, b) => dir * (parseInt(a.gid.replace('G', '')) - parseInt(b.gid.replace('G', ''))));
+                    } else {
+                        rows.sort((a, b) => dir * (a[key] - b[key]));
+                    }
+                    // Re-render
+                    tbody.innerHTML = rows.map(r => {
+                        const nameStyle = r.isAbandoned ? 'color:var(--red); font-weight:600' : '';
+                        const raceCells = r.sorted.map(p => {
+                            const isWinner = p.winner === 'true';
+                            const style = isWinner ? 'color:var(--green); font-weight:600; white-space:nowrap' : 'white-space:nowrap';
+                            const shortRace = p.race.split(' ')[0];
+                            return `<td style="${style}" data-player="${p.player_name}">${p.player_name} (${shortRace})</td>`;
+                        }).join('');
+                        const pad = Array(Math.max(0, 6 - r.sorted.length)).fill('<td></td>').join('');
+                        return `<tr>
+                            <td style="${nameStyle}; white-space:nowrap">${r.game.game_name}</td>
+                            ${raceCells}${pad}
+                            <td class="num">${r.totalVP}</td>
+                            <td class="num">${r.totalPts}</td>
+                            <td class="num">${r.duration || '-'}</td>
+                        </tr>`;
+                    }).join('');
+                };
+            });
+
+            // Player highlight on hover
+            table.addEventListener('mouseover', e => {
+                const td = e.target.closest('td[data-player]');
+                if (!td) return;
+                const name = td.dataset.player;
+                table.querySelectorAll('td[data-player]').forEach(cell => {
+                    cell.classList.toggle('player-highlight', cell.dataset.player === name);
+                });
+            });
+            table.addEventListener('mouseout', e => {
+                const td = e.target.closest('td[data-player]');
+                if (!td) return;
+                table.querySelectorAll('td.player-highlight').forEach(cell => {
+                    cell.classList.remove('player-highlight');
+                });
             });
         }
 
