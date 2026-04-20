@@ -83,18 +83,18 @@ G13,Game 13,finished,Ioan,Empyrean,6,6,false,3,false
 G13,Game 13,finished,VladC,Council Keleres,10,1,true,4,false
 G13,Game 13,finished,Branea,L1Z1X Mindnet,9,3,false,5,false
 G13,Game 13,finished,Adrim,Naalu Collective,9,2,false,6,false
-G15,Game 15,ongoing,Keyser,Yin Brotherhood,7,3,false,1,true
-G15,Game 15,ongoing,Jarod,Sardakk N'orr,8,1,false,2,false
-G15,Game 15,ongoing,Ioan,Nekro Virus,3,5,false,3,false
-G15,Game 15,ongoing,Branea,Titans of Ul,6,4,false,4,false
-G15,Game 15,ongoing,Quacky,Xxcha Kingdom,3,6,false,5,false
-G15,Game 15,ongoing,Ciupi,The Last Bastion,7,2,false,6,false
-G16,Game 16,ongoing,Ciupi,Crimson,3,6,false,1,true
-G16,Game 16,ongoing,Hektor,Naalu Collective,5,1,false,2,false
-G16,Game 16,ongoing,Jarod,Ghosts of Creuss,4,3,false,3,false
-G16,Game 16,ongoing,Quacky,Mentak Coalition,5,2,false,4,false
-G16,Game 16,ongoing,Syll,Mahact Gene-Sorcerers,4,4,false,5,false
-G16,Game 16,ongoing,Ioan,Sardakk N'orr,3,5,false,6,false
+G15,Game 15,finished,Keyser,Yin Brotherhood,7,4,false,1,true
+G15,Game 15,finished,Jarod,Sardakk N'orr,10,1,true,2,false
+G15,Game 15,finished,Ioan,Nekro Virus,3,5,false,3,false
+G15,Game 15,finished,Branea,Titans of Ul,7,3,false,4,false
+G15,Game 15,finished,Quacky,Xxcha Kingdom,3,6,false,5,false
+G15,Game 15,finished,Ciupi,The Last Bastion,8,2,false,6,false
+G16,Game 16,ongoing,Ciupi,Crimson,4,6,false,1,true
+G16,Game 16,ongoing,Hektor,Naalu Collective,7,1,false,2,false
+G16,Game 16,ongoing,Jarod,Ghosts of Creuss,6,2,false,3,false
+G16,Game 16,ongoing,Quacky,Mentak Coalition,6,3,false,4,false
+G16,Game 16,ongoing,Syll,Mahact Gene-Sorcerers,6,4,false,5,false
+G16,Game 16,ongoing,Ioan,Sardakk N'orr,5,5,false,6,false
 G17,Game 17,abandoned,Branea,Crimson,0,0,false,1,true
 G17,Game 17,abandoned,Ciupi,Naalu Collective,0,0,false,2,false
 G17,Game 17,abandoned,VladC,Ghosts of Creuss,0,0,false,3,false
@@ -113,3 +113,9 @@ G19,Game 19,ongoing,Edi,Arborec,3,6,false,3,false
 G19,Game 19,ongoing,Jarod,Council Keleres,4,1,false,4,false
 G19,Game 19,ongoing,TonoSmen,Yin Brotherhood,4,2,false,5,false
 G19,Game 19,ongoing,VladC,Federation of Sol,3,5,false,6,false
+G20,Game 20,ongoing,Jarod,Naaz-Rokha Alliance,1,1,false,1,true
+G20,Game 20,ongoing,Edi,Nekro Virus,1,1,false,2,false
+G20,Game 20,ongoing,Ioan,Regal Authority of Ral-Nel,1,1,false,3,false
+G20,Game 20,ongoing,Syll,Titans of Ul,1,1,false,4,false
+G20,Game 20,ongoing,VladC,Embers of Muaat,1,1,false,5,false
+G20,Game 20,ongoing,Quacky,Clan of Saar,1,1,false,6,false
