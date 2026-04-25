@@ -15,7 +15,7 @@ G03,Game 3,finished,Hektor,Vuil'raith Cabal,5,6,false,1,true,15
 G03,Game 3,finished,Ioan,Naaz-Rokha Alliance,7,4,false,2,false,15
 G03,Game 3,finished,Edi,Nomad,9,2,false,3,false,15
 G03,Game 3,finished,Jarod,Universities of Jol-Nar,7,5,false,4,false,15
-G03,Game 3,finished,Branea,Ghosts of Creuss,9,3,false,5,false,15
+G03,Game 3,finished,Branea,Crimson,9,3,false,5,false,15
 G03,Game 3,finished,Keyser,Clan of Saar,10,1,true,6,false,15
 G04,Game 4,finished,Ioan,Council Keleres,10,1,true,1,true,21
 G04,Game 4,finished,Edi,Federation of Sol,7,5,false,2,false,21
@@ -107,12 +107,12 @@ G18,Game 18,abandoned,Edi,Arborec,0,0,false,3,false,
 G18,Game 18,abandoned,Branea,Council Keleres,0,0,false,4,false,
 G18,Game 18,abandoned,Zuicky,Yin Brotherhood,0,0,false,5,false,
 G18,Game 18,abandoned,VladC,Federation of Sol,0,0,false,6,false,
-G19,Game 19,ongoing,Ciupi,Regal Authority of Ral-Nel,4,4,false,1,true,
-G19,Game 19,ongoing,Branea,Mentak Coalition,4,3,false,2,false,
-G19,Game 19,ongoing,Edi,Arborec,3,6,false,3,false,
-G19,Game 19,ongoing,Jarod,Council Keleres,4,1,false,4,false,
-G19,Game 19,ongoing,TonoSmen,Yin Brotherhood,4,2,false,5,false,
-G19,Game 19,ongoing,VladC,Federation of Sol,3,5,false,6,false,
+G19,Game 19,finished,Ciupi,Regal Authority of Ral-Nel,10,1,true,1,true,16
+G19,Game 19,finished,Branea,Mentak Coalition,9,3,false,2,false,16
+G19,Game 19,finished,Edi,Arborec,9,4,false,3,false,16
+G19,Game 19,finished,Jarod,Council Keleres,9,2,false,4,false,16
+G19,Game 19,finished,TonoSmen,Yin Brotherhood,8,6,false,5,false,16
+G19,Game 19,finished,VladC,Federation of Sol,9,5,false,6,false,16
 G20,Game 20,ongoing,Jarod,Naaz-Rokha Alliance,1,1,false,1,true,
 G20,Game 20,ongoing,Edi,Nekro Virus,1,1,false,2,false,
 G20,Game 20,ongoing,Ioan,Regal Authority of Ral-Nel,1,1,false,3,false,
