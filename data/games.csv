@@ -89,12 +89,12 @@ G15,Game 15,finished,Ioan,Nekro Virus,3,5,false,3,false,20
 G15,Game 15,finished,Branea,Titans of Ul,7,3,false,4,false,20
 G15,Game 15,finished,Quacky,Xxcha Kingdom,3,6,false,5,false,20
 G15,Game 15,finished,Ciupi,The Last Bastion,8,2,false,6,false,20
-G16,Game 16,ongoing,Ciupi,Crimson,4,6,false,1,true,
-G16,Game 16,ongoing,Hektor,Naalu Collective,7,1,false,2,false,
-G16,Game 16,ongoing,Jarod,Ghosts of Creuss,6,2,false,3,false,
-G16,Game 16,ongoing,Quacky,Mentak Coalition,6,3,false,4,false,
-G16,Game 16,ongoing,Syll,Mahact Gene-Sorcerers,6,4,false,5,false,
-G16,Game 16,ongoing,Ioan,Sardakk N'orr,5,5,false,6,false,
+G16,Game 16,finished,Ciupi,Crimson,8,5,false,1,true,25
+G16,Game 16,finished,Hektor,Naalu Collective,9,2,false,2,false,25
+G16,Game 16,finished,Jarod,Ghosts of Creuss,9,3,false,3,false,25
+G16,Game 16,finished,Quacky,Mentak Coalition,10,1,true,4,false,25
+G16,Game 16,finished,Syll,Mahact Gene-Sorcerers,9,4,false,5,false,25
+G16,Game 16,finished,Ioan,Sardakk N'orr,7,6,false,6,false,25
 G17,Game 17,abandoned,Branea,Crimson,0,0,false,1,true,
 G17,Game 17,abandoned,Ciupi,Naalu Collective,0,0,false,2,false,
 G17,Game 17,abandoned,VladC,Ghosts of Creuss,0,0,false,3,false,
