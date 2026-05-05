@@ -2,7 +2,7 @@ game_id,game_name,status,player_name,race,victory_points,ranking,winner,pick_ord
 G01,Game 1,finished,Edi,Titans of Ul,9,5,false,1,true,20
 G01,Game 1,finished,Keyser,Deepwrought Scholarate,9,3,false,2,false,20
 G01,Game 1,finished,Hektor,Universities of Jol-Nar,10,1,true,3,false,20
-G01,Game 1,finished,Branea,Arborec,0,6,false,4,false,20
+G01,Game 1,finished,Branea,Arborec,0,0,false,4,false,20
 G01,Game 1,finished,Ioan,L1Z1X Mindnet,9,4,false,5,false,20
 G01,Game 1,finished,Jarod,Mentak Coalition,9,2,false,6,false,20
 G02,Game 2,finished,Morthai,The Last Bastion,8,4,false,1,true,16
@@ -121,7 +121,7 @@ G20,Game 20,ongoing,VladC,Embers of Muaat,1,1,false,5,false,
 G20,Game 20,ongoing,Quacky,Clan of Saar,1,1,false,6,false,
 G21,Game 21,finished,Lyxye,Nekro Virus,6,4,false,1,true,
 G21,Game 21,finished,Quacky,Argent Flight,4,5,false,2,false,
-G21,Game 21,finished,VladC,Firmament,0,6,false,3,false,
+G21,Game 21,finished,VladC,Firmament,0,0,false,3,false,
 G21,Game 21,finished,Hektor,Sardakk N'orr,8,2,false,4,false,
 G21,Game 21,finished,Keyser,Federation of Sol,6,3,false,5,false,
 G21,Game 21,finished,Branea,Emirates of Hacan,10,1,true,6,false,
