@@ -113,12 +113,12 @@ G19,Game 19,finished,Edi,Arborec,9,4,false,3,false,16
 G19,Game 19,finished,Jarod,Council Keleres,9,2,false,4,false,16
 G19,Game 19,finished,TonoSmen,Yin Brotherhood,8,6,false,5,false,16
 G19,Game 19,finished,VladC,Federation of Sol,9,5,false,6,false,16
-G20,Game 20,ongoing,Jarod,Naaz-Rokha Alliance,1,1,false,1,true,
-G20,Game 20,ongoing,Edi,Nekro Virus,1,1,false,2,false,
-G20,Game 20,ongoing,Ioan,Regal Authority of Ral-Nel,1,1,false,3,false,
-G20,Game 20,ongoing,Syll,Titans of Ul,1,1,false,4,false,
-G20,Game 20,ongoing,VladC,Embers of Muaat,1,1,false,5,false,
-G20,Game 20,ongoing,Quacky,Clan of Saar,1,1,false,6,false,
+G20,Game 20,finished,Jarod,Naaz-Rokha Alliance,4,5,false,1,true,
+G20,Game 20,finished,Edi,Nekro Virus,7,3,false,2,false,
+G20,Game 20,finished,Ioan,Regal Authority of Ral-Nel,6,4,false,3,false,
+G20,Game 20,finished,Syll,Titans of Ul,10,1,true,4,false,
+G20,Game 20,finished,VladC,Embers of Muaat,7,2,false,5,false,
+G20,Game 20,finished,Quacky,Clan of Saar,2,6,false,6,false,
 G21,Game 21,finished,Lyxye,Nekro Virus,6,4,false,1,true,
 G21,Game 21,finished,Quacky,Argent Flight,4,5,false,2,false,
 G21,Game 21,finished,VladC,Firmament,0,0,false,3,false,
