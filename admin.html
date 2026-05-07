@@ -541,14 +541,14 @@
 
         // --- UPDATE GAME ---
         function populateGameSelects() {
-            const ongoing = [...new Set(gamesData.filter(r => r.status === 'ongoing').map(r => r.game_id))];
-            const all = [...new Set(gamesData.filter(r => r.status !== 'abandoned').map(r => r.game_id))];
+            const ongoing = [...new Set(gamesData.filter(r => r.status.trim() === 'ongoing').map(r => r.game_id))];
+            const all = [...new Set(gamesData.filter(r => r.status.trim() !== 'abandoned').map(r => r.game_id))];
 
             const updateSel = document.getElementById('update-game-select');
             updateSel.innerHTML = '<option value="">-- Select --</option>' +
                 all.sort((a, b) => parseInt(a.replace('G', '')) - parseInt(b.replace('G', ''))).map(gid => {
                     const g = gamesData.find(r => r.game_id === gid);
-                    const badge = g.status === 'ongoing' ? ' 🔴' : ' ✅';
+                    const badge = g.status.trim() === 'ongoing' ? ' 🔴' : ' ✅';
                     return `<option value="${gid}">${g.game_name}${badge}</option>`;
                 }).join('');
 
@@ -566,15 +566,18 @@
             const rows = gamesData.filter(r => r.game_id === gid);
             const container = document.getElementById('update-players');
             container.innerHTML = `
-      <div class="row-header" style="grid-template-columns:1fr 2fr 80px 80px;">
-        <span>Player</span><span>Race</span><span>VP</span><span>Rank</span>
+      <div style="display:grid; grid-template-columns:1fr 2fr 80px 80px; gap:0.5rem; margin-bottom:0.3rem;">
+        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">Player</span>
+        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">Race</span>
+        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">VP</span>
+        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">Rank</span>
       </div>` +
-                rows.map(r => `
+                rows.map((r, i) => `
         <div style="display:grid; grid-template-columns:1fr 2fr 80px 80px; gap:0.5rem; margin-bottom:0.5rem;">
-          <input value="${r.player_name}" readonly style="color:var(--text-muted)">
-          <input value="${r.race}" readonly style="color:var(--text-muted)">
-          <input type="number" id="upd-vp-${r.player_name}" value="${r.victory_points}" min="0" max="10">
-          <input type="number" id="upd-rank-${r.player_name}" value="${r.ranking}" min="0" max="6">
+          ${playerSelect('upd-player-' + i, r.player_name)}
+          ${raceSelect('upd-race-' + i, r.race)}
+          <input type="number" id="upd-vp-${i}" value="${r.victory_points}" min="0" max="10">
+          <input type="number" id="upd-rank-${i}" value="${r.ranking}" min="0" max="6">
         </div>`).join('');
             document.getElementById('update-btn').style.display = 'block';
         }
@@ -582,9 +585,13 @@
         async function updateGame() {
             const gid = document.getElementById('update-game-select').value;
             const rows = gamesData.filter(r => r.game_id === gid);
-            rows.forEach(r => {
-                r.victory_points = document.getElementById('upd-vp-' + r.player_name)?.value || r.victory_points;
-                r.ranking = document.getElementById('upd-rank-' + r.player_name)?.value || r.ranking;
+            rows.forEach((r, i) => {
+                const pEl = document.getElementById('upd-player-' + i);
+                if (pEl) r.player_name = pEl.value || r.player_name;
+                const raceEl = document.getElementById('upd-race-' + i);
+                if (raceEl) r.race = raceEl.value || r.race;
+                r.victory_points = document.getElementById('upd-vp-' + i)?.value ?? r.victory_points;
+                r.ranking = document.getElementById('upd-rank-' + i)?.value ?? r.ranking;
             });
             showMsg('update-msg', 'loading', 'Saving...');
             try {
@@ -592,6 +599,7 @@
                 const updated = gamesData.map(r => r.game_id === gid ? (rows.find(x => x.player_name === r.player_name) || r) : r);
                 await ghPut('data/games.csv', serializeGames(updated), gamesSHA, `Update ${gid}`);
                 await fetchCSVs();
+                loadGameForUpdate();
                 showMsg('update-msg', 'success', 'Game updated!');
             } catch (e) {
                 showMsg('update-msg', 'error', 'Error: ' + e.message);
@@ -605,16 +613,20 @@
             const rows = gamesData.filter(r => r.game_id === gid);
             const container = document.getElementById('close-players');
             container.innerHTML = `
-      <div class="row-header" style="grid-template-columns:1fr 2fr 80px 80px 80px;">
-        <span>Player</span><span>Race</span><span>VP</span><span>Rank</span><span>Winner</span>
+      <div style="display:grid; grid-template-columns:1fr 2fr 80px 80px 80px; gap:0.5rem; margin-bottom:0.3rem;">
+        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">Player</span>
+        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">Race</span>
+        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">VP</span>
+        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">Rank</span>
+        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">Winner</span>
       </div>` +
-                rows.map(r => `
+                rows.map((r, i) => `
         <div style="display:grid; grid-template-columns:1fr 2fr 80px 80px 80px; gap:0.5rem; margin-bottom:0.5rem;">
-          <input value="${r.player_name}" readonly style="color:var(--text-muted)">
-          <input value="${r.race}" readonly style="color:var(--text-muted)">
-          <input type="number" id="cls-vp-${r.player_name}" value="${r.victory_points}" min="0" max="10">
-          <input type="number" id="cls-rank-${r.player_name}" value="${r.ranking}" min="0" max="6">
-          <select id="cls-win-${r.player_name}">
+          ${playerSelect('cls-player-' + i, r.player_name)}
+          ${raceSelect('cls-race-' + i, r.race)}
+          <input type="number" id="cls-vp-${i}" value="${r.victory_points}" min="0" max="10">
+          <input type="number" id="cls-rank-${i}" value="${r.ranking}" min="0" max="6">
+          <select id="cls-win-${i}">
             <option value="false" ${r.winner === 'false' ? 'selected' : ''}>-</option>
             <option value="true" ${r.winner === 'true' ? 'selected' : ''}>👑 Win</option>
           </select>
@@ -628,10 +640,14 @@
             const status = document.getElementById('close-status').value;
             const duration = document.getElementById('close-duration').value;
             const rows = gamesData.filter(r => r.game_id === gid);
-            rows.forEach(r => {
-                r.victory_points = document.getElementById('cls-vp-' + r.player_name)?.value || r.victory_points;
-                r.ranking = document.getElementById('cls-rank-' + r.player_name)?.value || r.ranking;
-                r.winner = document.getElementById('cls-win-' + r.player_name)?.value || r.winner;
+            rows.forEach((r, i) => {
+                const pEl = document.getElementById('cls-player-' + i);
+                if (pEl) r.player_name = pEl.value || r.player_name;
+                const raceEl = document.getElementById('cls-race-' + i);
+                if (raceEl) r.race = raceEl.value || r.race;
+                r.victory_points = document.getElementById('cls-vp-' + i)?.value ?? r.victory_points;
+                r.ranking = document.getElementById('cls-rank-' + i)?.value ?? r.ranking;
+                r.winner = document.getElementById('cls-win-' + i)?.value ?? r.winner;
                 r.status = status;
                 r.duration_days = duration;
             });
