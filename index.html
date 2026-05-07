@@ -692,8 +692,8 @@
                 const game = players[0];
                 const isAbandoned = game.status === 'abandoned';
                 const sorted = [...players].sort((a, b) => {
-                    const ra = a.rank === 0 ? 99 : a.rank;
-                    const rb = b.rank === 0 ? 99 : b.rank;
+                    const ra = Number(a.rank) === 0 ? 99 : Number(a.rank);
+                    const rb = Number(b.rank) === 0 ? 99 : Number(b.rank);
                     return ra - rb;
                 });
                 const totalVP = isAbandoned ? 0 : players.reduce((s, r) => s + r.vp, 0);
@@ -801,8 +801,8 @@
             const game = rows[0];
             const container = document.getElementById('game-detail');
             const sorted = [...rows].sort((a, b) => {
-                const ra = a.rank === 0 ? 99 : a.rank;
-                const rb = b.rank === 0 ? 99 : b.rank;
+                const ra = Number(a.rank) === 0 ? 99 : Number(a.rank);
+                const rb = Number(b.rank) === 0 ? 99 : Number(b.rank);
                 return ra - rb;
             });
             const statusBadge = game.status === 'ongoing'
