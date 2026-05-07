@@ -691,7 +691,11 @@
                 const players = gamesData.filter(r => r.game_id === gid);
                 const game = players[0];
                 const isAbandoned = game.status === 'abandoned';
-                const sorted = [...players].sort((a, b) => a.rank - b.rank);
+                const sorted = [...players].sort((a, b) => {
+                    const ra = a.rank === 0 ? 99 : a.rank;
+                    const rb = b.rank === 0 ? 99 : b.rank;
+                    return ra - rb;
+                });
                 const totalVP = isAbandoned ? 0 : players.reduce((s, r) => s + r.vp, 0);
                 const totalPts = isAbandoned ? 0 : players.reduce((s, r) => s + r.totalPts, 0);
                 const duration = game.duration_days ? Number(game.duration_days) : 0;
@@ -796,7 +800,11 @@
             if (!rows.length) return;
             const game = rows[0];
             const container = document.getElementById('game-detail');
-            const sorted = [...rows].sort((a, b) => a.rank - b.rank);
+            const sorted = [...rows].sort((a, b) => {
+                const ra = a.rank === 0 ? 99 : a.rank;
+                const rb = b.rank === 0 ? 99 : b.rank;
+                return ra - rb;
+            });
             const statusBadge = game.status === 'ongoing'
                 ? '<span class="badge badge-ongoing">ONGOING</span>'
                 : game.status === 'abandoned'
