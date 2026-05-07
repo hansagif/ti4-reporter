@@ -264,7 +264,7 @@
             <div class="tabs">
                 <button class="active" onclick="tab('start')">Start Game</button>
                 <button onclick="tab('update')">Update Game</button>
-                <button onclick="tab('close')">Close Game</button>
+                <button onclick="tab('close')">Completed</button>
                 <button onclick="tab('delete')">Delete Game</button>
             </div>
 
@@ -312,7 +312,7 @@
             <!-- CLOSE -->
             <div id="tab-close" class="tab">
                 <div class="card">
-                    <h2>Close / Finish Game</h2>
+                    <h2>Complete / Close Game</h2>
                     <label>Select Game</label>
                     <select id="c-sel" onchange="loadClose()">
                         <option value="">-- Select --</option>
@@ -433,11 +433,12 @@
         // --- Fill selects ---
         function fillSelects() {
             const ongoing = [...new Set(gamesData.filter(r => r.status === 'ongoing').map(r => r.game_id))].sort((a, b) => parseInt(a.replace('G', '')) - parseInt(b.replace('G', '')));
+            const finished = [...new Set(gamesData.filter(r => r.status === 'finished').map(r => r.game_id))].sort((a, b) => parseInt(a.replace('G', '')) - parseInt(b.replace('G', '')));
             const all = [...new Set(gamesData.map(r => r.game_id))].sort((a, b) => parseInt(a.replace('G', '')) - parseInt(b.replace('G', '')));
 
             const opt = (gid, badge = '') => { const g = gamesData.find(r => r.game_id === gid); return `<option value="${gid}">${g.game_name}${badge}</option>`; };
             document.getElementById('u-sel').innerHTML = '<option value="">-- Select --</option>' + ongoing.map(g => opt(g, ' 🔴')).join('');
-            document.getElementById('c-sel').innerHTML = '<option value="">-- Select --</option>' + ongoing.map(g => opt(g)).join('');
+            document.getElementById('c-sel').innerHTML = '<option value="">-- Select --</option>' + finished.map(g => opt(g, ' ✅')).join('');
             document.getElementById('d-sel').innerHTML = '<option value="">-- Select --</option>' + all.map(g => opt(g, ' (' + gamesData.find(r => r.game_id === g).status + ')')).join('');
         }
 
