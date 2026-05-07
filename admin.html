@@ -354,6 +354,7 @@
         </main>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script>
         const REPO = 'hansagif/ti4-reporter';
         const BRANCH = 'main';
@@ -425,14 +426,7 @@
         }
 
         function parseCSV(text) {
-            const lines = text.trim().split('\n');
-            const headers = lines[0].split(',');
-            return lines.slice(1).map(line => {
-                const vals = line.split(',');
-                const obj = {};
-                headers.forEach((h, i) => obj[h.trim()] = (vals[i] || '').trim());
-                return obj;
-            });
+            return Papa.parse(text, { header: true, skipEmptyLines: true }).data;
         }
 
         function parseCSVs() {
@@ -548,16 +542,22 @@
         // --- UPDATE GAME ---
         function populateGameSelects() {
             const ongoing = [...new Set(gamesData.filter(r => r.status === 'ongoing').map(r => r.game_id))];
-            const all = [...new Set(gamesData.map(r => r.game_id))];
+            const all = [...new Set(gamesData.filter(r => r.status !== 'abandoned').map(r => r.game_id))];
 
-            ['update-game-select', 'close-game-select'].forEach((id, idx) => {
-                const list = idx === 0 ? ongoing : ongoing;
-                document.getElementById(id).innerHTML = '<option value="">-- Select --</option>' +
-                    list.sort((a, b) => parseInt(a.replace('G', '')) - parseInt(b.replace('G', ''))).map(gid => {
-                        const g = gamesData.find(r => r.game_id === gid);
-                        return `<option value="${gid}">${g.game_name}</option>`;
-                    }).join('');
-            });
+            const updateSel = document.getElementById('update-game-select');
+            updateSel.innerHTML = '<option value="">-- Select --</option>' +
+                all.sort((a, b) => parseInt(a.replace('G', '')) - parseInt(b.replace('G', ''))).map(gid => {
+                    const g = gamesData.find(r => r.game_id === gid);
+                    const badge = g.status === 'ongoing' ? ' 🔴' : ' ✅';
+                    return `<option value="${gid}">${g.game_name}${badge}</option>`;
+                }).join('');
+
+            const closeSel = document.getElementById('close-game-select');
+            closeSel.innerHTML = '<option value="">-- Select --</option>' +
+                ongoing.sort((a, b) => parseInt(a.replace('G', '')) - parseInt(b.replace('G', ''))).map(gid => {
+                    const g = gamesData.find(r => r.game_id === gid);
+                    return `<option value="${gid}">${g.game_name}</option>`;
+                }).join('');
         }
 
         function loadGameForUpdate() {
