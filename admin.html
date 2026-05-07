@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TI4 Admin</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent2: #f0883e;
+            --green: #3fb950;
+            --red: #f85149;
+            --yellow: #d29922;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            color: var(--accent2);
+        }
+
+        header a {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+
+        header a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card h2 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+            margin-top: 0.8rem;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        button {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 0.6rem 1.4rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        button.danger {
+            background: var(--red);
+            color: #fff;
+        }
+
+        button.secondary {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .player-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr 80px 80px 80px 80px;
+            gap: 0.5rem;
+            align-items: end;
+            margin-bottom: 0.5rem;
+        }
+
+        .player-row label {
+            margin: 0;
+        }
+
+        .row-header {
+            display: grid;
+            grid-template-columns: 1fr 2fr 80px 80px 80px 80px;
+            gap: 0.5rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .row-header span {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .msg {
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .msg.success {
+            background: rgba(63, 185, 80, 0.15);
+            color: var(--green);
+            border: 1px solid var(--green);
+            display: block;
+        }
+
+        .msg.error {
+            background: rgba(248, 81, 73, 0.15);
+            color: var(--red);
+            border: 1px solid var(--red);
+            display: block;
+        }
+
+        .msg.loading {
+            background: rgba(88, 166, 255, 0.1);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            display: block;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .tabs button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-bottom: 2px solid transparent;
+            border-radius: 0;
+            margin-top: 0;
+        }
+
+        .tabs button.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        #auth-section {
+            max-width: 500px;
+            margin: 4rem auto;
+        }
+
+        #app {
+            display: none;
+        }
+
+        .game-option {
+            padding: 0.4rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-ongoing {
+            background: rgba(210, 153, 34, 0.15);
+            color: var(--yellow);
+        }
+
+        .badge-finished {
+            background: rgba(63, 185, 80, 0.15);
+            color: var(--green);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Auth Screen -->
+    <div id="auth-section">
+        <div class="card">
+            <h2 style="color:var(--accent2); font-size:1.2rem; margin-bottom:0.5rem;">TI4 Admin</h2>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">
+                Enter your GitHub Personal Access Token to manage game data.<br>
+                Token needs <strong>repo</strong> scope. It's stored only in your browser session.
+            </p>
+            <label>GitHub Token</label>
+            <input type="password" id="token-input" placeholder="ghp_...">
+            <button onclick="authenticate()">Connect</button>
+            <div id="auth-msg" class="msg"></div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app">
+        <header>
+            <h1>TI4 Admin Panel</h1>
+            <div style="display:flex;gap:1rem;align-items:center;">
+                <span id="header-status" style="color:var(--text-muted); font-size:0.85rem;"></span>
+                <a href="index.html">← Back to site</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </header>
+        <main>
+            <div class="tabs">
+                <button class="active" onclick="switchTab('start')">Start Game</button>
+                <button onclick="switchTab('update')">Update Game</button>
+                <button onclick="switchTab('close')">Close Game</button>
+            </div>
+
+            <!-- START GAME -->
+            <div id="tab-start" class="tab-content active">
+                <div class="card">
+                    <h2>Start New Game</h2>
+                    <label>Game ID (e.g. G23)</label>
+                    <input type="text" id="new-game-id" placeholder="G23">
+                    <label>Game Name</label>
+                    <input type="text" id="new-game-name" placeholder="Game 23">
+                    <label>Speaker (player name)</label>
+                    <input type="text" id="new-speaker" placeholder="Hektor">
+
+                    <div style="margin-top:1.2rem;">
+                        <div class="row-header">
+                            <span>Player</span><span>Race</span><span>Pick#</span><span>Speaker</span><span></span><span></span>
+                        </div>
+                        <div id="start-players"></div>
+                    </div>
+
+                    <div style="margin-top:1rem;">
+                        <label>Banned Races (one per line)</label>
+                        <textarea id="new-bans" rows="4"
+                            placeholder="Yssaril Tribes&#10;Deepwrought Scholarate&#10;Crimson"></textarea>
+                        <label>Not Picked Races (one per line)</label>
+                        <textarea id="new-notpicked" rows="2" placeholder="Nomad"></textarea>
+                    </div>
+
+                    <button onclick="startGame()">Create Game</button>
+                    <div id="start-msg" class="msg"></div>
+                </div>
+            </div>
+
+            <!-- UPDATE GAME -->
+            <div id="tab-update" class="tab-content">
+                <div class="card">
+                    <h2>Update Ongoing Game</h2>
+                    <label>Select Game</label>
+                    <select id="update-game-select" onchange="loadGameForUpdate()"></select>
+
+                    <div id="update-players" style="margin-top:1rem;"></div>
+
+                    <button onclick="updateGame()" style="display:none" id="update-btn">Save Update</button>
+                    <div id="update-msg" class="msg"></div>
+                </div>
+            </div>
+
+            <!-- CLOSE GAME -->
+            <div id="tab-close" class="tab-content">
+                <div class="card">
+                    <h2>Close / Finish Game</h2>
+                    <label>Select Game</label>
+                    <select id="close-game-select" onchange="loadGameForClose()"></select>
+
+                    <div id="close-players" style="margin-top:1rem;"></div>
+
+                    <div id="close-extra" style="display:none; margin-top:1rem;">
+                        <label>Duration (days)</label>
+                        <input type="number" id="close-duration" placeholder="14">
+                        <label>Status</label>
+                        <select id="close-status">
+                            <option value="finished">Finished</option>
+                            <option value="abandoned">Abandoned</option>
+                        </select>
+                    </div>
+
+                    <button onclick="closeGame()" style="display:none" id="close-btn" class="danger">Close Game</button>
+                    <div id="close-msg" class="msg"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const REPO = 'hansagif/ti4-reporter';
+        const BRANCH = 'main';
+        const VP_POINTS = { 0: 0, 1: 0, 2: 1, 3: 3, 4: 6, 5: 10, 6: 16, 7: 24, 8: 34, 9: 46, 10: 68 };
+        const RANK_POINTS = { 0: 0, 1: 32, 2: 16, 3: 8, 4: 4, 5: 2, 6: 1 };
+
+        let token = '';
+        let gamesCSV = '', bansCSV = '';
+        let gamesSHA = '', bansSHA = '';
+        let gamesData = [], bansData = [];
+
+        const KNOWN_PLAYERS = ['Edi', 'Keyser', 'Hektor', 'Branea', 'Ioan', 'Jarod', 'Morthai', 'Adrim', 'Ciupi', 'Titelandru', 'Zuicky', 'Lyxye', 'Syll', 'VladC', 'Quacky', 'TonoSmen'];
+        const KNOWN_RACES = [
+            'Arborec', 'Argent Flight', 'Barony of Letnev', 'Clan of Saar', 'Council Keleres',
+            'Crimson', 'Deepwrought Scholarate', 'Emirates of Hacan', 'Empyrean', 'Federation of Sol',
+            'Firmament', 'Ghosts of Creuss', 'L1Z1X Mindnet', 'Mahact Gene-Sorcerers', 'Mentak Coalition',
+            'Naalu Collective', 'Naaz-Rokha Alliance', 'Nekro Virus', 'Nomad', 'Regal Authority of Ral-Nel',
+            'Sardakk N\'orr', 'The Last Bastion', 'Titans of Ul', 'Universities of Jol-Nar',
+            'Vuil\'raith Cabal', 'Winnu', 'Xxcha Kingdom', 'Yin Brotherhood', 'Yssaril Tribes',
+            'Embers of Muaat', 'Clan of Saar'
+        ].sort();
+
+        // --- Auth ---
+        function authenticate() {
+            token = document.getElementById('token-input').value.trim();
+            if (!token) return showMsg('auth-msg', 'error', 'Please enter a token.');
+            showMsg('auth-msg', 'loading', 'Connecting...');
+            fetchCSVs().then(() => {
+                document.getElementById('auth-section').style.display = 'none';
+                document.getElementById('app').style.display = 'block';
+                sessionStorage.setItem('ti4_token', token);
+                document.getElementById('header-status').textContent = `Connected to ${REPO}`;
+                buildStartPlayers();
+                populateGameSelects();
+            }).catch(e => showMsg('auth-msg', 'error', 'Failed: ' + e.message));
+        }
+
+        function logout() {
+            sessionStorage.removeItem('ti4_token');
+            location.reload();
+        }
+
+        // --- GitHub API ---
+        async function ghGet(path) {
+            const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}`, {
+                headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+            });
+            if (!r.ok) throw new Error(`GitHub API error: ${r.status}`);
+            return r.json();
+        }
+
+        async function ghPut(path, content, sha, message) {
+            const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+                method: 'PUT',
+                headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message, content: btoa(unescape(encodeURIComponent(content))), sha, branch: BRANCH })
+            });
+            if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
+            return r.json();
+        }
+
+        async function fetchCSVs() {
+            const [gf, bf] = await Promise.all([ghGet('data/games.csv'), ghGet('data/bans.csv')]);
+            gamesSHA = gf.sha;
+            bansSHA = bf.sha;
+            gamesCSV = decodeURIComponent(escape(atob(gf.content.replace(/\n/g, ''))));
+            bansCSV = decodeURIComponent(escape(atob(bf.content.replace(/\n/g, ''))));
+            parseCSVs();
+        }
+
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            const headers = lines[0].split(',');
+            return lines.slice(1).map(line => {
+                const vals = line.split(',');
+                const obj = {};
+                headers.forEach((h, i) => obj[h.trim()] = (vals[i] || '').trim());
+                return obj;
+            });
+        }
+
+        function parseCSVs() {
+            gamesData = parseCSV(gamesCSV);
+            bansData = parseCSV(bansCSV);
+        }
+
+        // --- CSV Serialization ---
+        function serializeGames(data) {
+            const header = 'game_id,game_name,status,player_name,race,victory_points,ranking,winner,pick_order,speaker,duration_days';
+            const rows = data.map(r =>
+                `${r.game_id},${r.game_name},${r.status},${r.player_name},${r.race},${r.victory_points},${r.ranking},${r.winner},${r.pick_order},${r.speaker},${r.duration_days || ''}`
+            );
+            return header + '\n' + rows.join('\n') + '\n';
+        }
+
+        function serializeBans(data) {
+            const header = 'game_id,race,type';
+            const rows = data.map(r => `${r.game_id},${r.race},${r.type}`);
+            return header + '\n' + rows.join('\n') + '\n';
+        }
+
+        // --- Tab switching ---
+        function switchTab(name) {
+            document.querySelectorAll('.tabs button').forEach((b, i) => b.classList.toggle('active', ['start', 'update', 'close'][i] === name));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+        }
+
+        // --- Helpers ---
+        function showMsg(id, type, text) {
+            const el = document.getElementById(id);
+            el.className = 'msg ' + type;
+            el.textContent = text;
+        }
+
+        function raceSelect(id, val = '') {
+            return `<select id="${id}"><option value="">-- Race --</option>${KNOWN_RACES.map(r => `<option value="${r}" ${r === val ? 'selected' : ''}>${r}</option>`).join('')}</select>`;
+        }
+
+        function playerSelect(id, val = '') {
+            return `<select id="${id}"><option value="">-- Player --</option>${KNOWN_PLAYERS.map(p => `<option value="${p}" ${p === val ? 'selected' : ''}>${p}</option>`).join('')}<option value="__custom__">Other...</option></select>`;
+        }
+
+        // --- START GAME ---
+        function buildStartPlayers() {
+            const container = document.getElementById('start-players');
+            container.innerHTML = '';
+            for (let i = 1; i <= 6; i++) {
+                container.innerHTML += `
+        <div class="player-row">
+          ${playerSelect('sp-player-' + i)}
+          ${raceSelect('sp-race-' + i)}
+          <input type="number" id="sp-pick-${i}" value="${i}" min="1" max="6" placeholder="Pick#">
+          <select id="sp-speaker-${i}"><option value="false">-</option><option value="true">🔊</option></select>
+        </div>`;
+            }
+            // Auto-fill next game ID
+            const ids = [...new Set(gamesData.map(r => r.game_id))];
+            const maxNum = ids.reduce((m, id) => Math.max(m, parseInt(id.replace('G', '')) || 0), 0);
+            const nextId = 'G' + String(maxNum + 1).padStart(2, '0');
+            document.getElementById('new-game-id').value = nextId;
+            document.getElementById('new-game-name').value = 'Game ' + (maxNum + 1);
+        }
+
+        async function startGame() {
+            const gameId = document.getElementById('new-game-id').value.trim();
+            const gameName = document.getElementById('new-game-name').value.trim();
+            if (!gameId || !gameName) return showMsg('start-msg', 'error', 'Game ID and name required.');
+
+            const players = [];
+            for (let i = 1; i <= 6; i++) {
+                const pEl = document.getElementById('sp-player-' + i);
+                let player = pEl.value;
+                if (player === '__custom__') player = prompt('Enter player name:') || '';
+                const race = document.getElementById('sp-race-' + i).value;
+                const pick = document.getElementById('sp-pick-' + i).value;
+                const speaker = document.getElementById('sp-speaker-' + i).value;
+                if (!player || !race) continue;
+                players.push({ player_name: player, race, pick_order: pick, speaker });
+            }
+            if (players.length < 2) return showMsg('start-msg', 'error', 'Add at least 2 players.');
+
+            const newRows = players.map(p => ({
+                game_id: gameId, game_name: gameName, status: 'ongoing',
+                player_name: p.player_name, race: p.race,
+                victory_points: '0', ranking: '1', winner: 'false',
+                pick_order: p.pick_order, speaker: p.speaker, duration_days: ''
+            }));
+
+            const bansText = document.getElementById('new-bans').value.trim();
+            const npText = document.getElementById('new-notpicked').value.trim();
+            const newBans = bansText ? bansText.split('\n').filter(Boolean).map(r => ({ game_id: gameId, race: r.trim(), type: 'banned' })) : [];
+            const newNP = npText ? npText.split('\n').filter(Boolean).map(r => ({ game_id: gameId, race: r.trim(), type: 'not_picked' })) : [];
+
+            showMsg('start-msg', 'loading', 'Saving to GitHub...');
+            try {
+                await fetchCSVs(); // refresh SHAs
+                const newGames = [...gamesData, ...newRows];
+                const newBansData = [...bansData, ...newBans, ...newNP];
+                await ghPut('data/games.csv', serializeGames(newGames), gamesSHA, `Start ${gameName}`);
+                const bf = await ghGet('data/bans.csv');
+                bansSHA = bf.sha;
+                await ghPut('data/bans.csv', serializeBans(newBansData), bansSHA, `Bans for ${gameName}`);
+                await fetchCSVs();
+                populateGameSelects();
+                showMsg('start-msg', 'success', `${gameName} created with ${players.length} players!`);
+            } catch (e) {
+                showMsg('start-msg', 'error', 'Error: ' + e.message);
+            }
+        }
+
+        // --- UPDATE GAME ---
+        function populateGameSelects() {
+            const ongoing = [...new Set(gamesData.filter(r => r.status === 'ongoing').map(r => r.game_id))];
+            const all = [...new Set(gamesData.map(r => r.game_id))];
+
+            ['update-game-select', 'close-game-select'].forEach((id, idx) => {
+                const list = idx === 0 ? ongoing : ongoing;
+                document.getElementById(id).innerHTML = '<option value="">-- Select --</option>' +
+                    list.sort((a, b) => parseInt(a.replace('G', '')) - parseInt(b.replace('G', ''))).map(gid => {
+                        const g = gamesData.find(r => r.game_id === gid);
+                        return `<option value="${gid}">${g.game_name}</option>`;
+                    }).join('');
+            });
+        }
+
+        function loadGameForUpdate() {
+            const gid = document.getElementById('update-game-select').value;
+            if (!gid) return;
+            const rows = gamesData.filter(r => r.game_id === gid);
+            const container = document.getElementById('update-players');
+            container.innerHTML = `
+      <div class="row-header" style="grid-template-columns:1fr 2fr 80px 80px;">
+        <span>Player</span><span>Race</span><span>VP</span><span>Rank</span>
+      </div>` +
+                rows.map(r => `
+        <div style="display:grid; grid-template-columns:1fr 2fr 80px 80px; gap:0.5rem; margin-bottom:0.5rem;">
+          <input value="${r.player_name}" readonly style="color:var(--text-muted)">
+          <input value="${r.race}" readonly style="color:var(--text-muted)">
+          <input type="number" id="upd-vp-${r.player_name}" value="${r.victory_points}" min="0" max="10">
+          <input type="number" id="upd-rank-${r.player_name}" value="${r.ranking}" min="0" max="6">
+        </div>`).join('');
+            document.getElementById('update-btn').style.display = 'block';
+        }
+
+        async function updateGame() {
+            const gid = document.getElementById('update-game-select').value;
+            const rows = gamesData.filter(r => r.game_id === gid);
+            rows.forEach(r => {
+                r.victory_points = document.getElementById('upd-vp-' + r.player_name)?.value || r.victory_points;
+                r.ranking = document.getElementById('upd-rank-' + r.player_name)?.value || r.ranking;
+            });
+            showMsg('update-msg', 'loading', 'Saving...');
+            try {
+                await fetchCSVs();
+                const updated = gamesData.map(r => r.game_id === gid ? (rows.find(x => x.player_name === r.player_name) || r) : r);
+                await ghPut('data/games.csv', serializeGames(updated), gamesSHA, `Update ${gid}`);
+                await fetchCSVs();
+                showMsg('update-msg', 'success', 'Game updated!');
+            } catch (e) {
+                showMsg('update-msg', 'error', 'Error: ' + e.message);
+            }
+        }
+
+        // --- CLOSE GAME ---
+        function loadGameForClose() {
+            const gid = document.getElementById('close-game-select').value;
+            if (!gid) return;
+            const rows = gamesData.filter(r => r.game_id === gid);
+            const container = document.getElementById('close-players');
+            container.innerHTML = `
+      <div class="row-header" style="grid-template-columns:1fr 2fr 80px 80px 80px;">
+        <span>Player</span><span>Race</span><span>VP</span><span>Rank</span><span>Winner</span>
+      </div>` +
+                rows.map(r => `
+        <div style="display:grid; grid-template-columns:1fr 2fr 80px 80px 80px; gap:0.5rem; margin-bottom:0.5rem;">
+          <input value="${r.player_name}" readonly style="color:var(--text-muted)">
+          <input value="${r.race}" readonly style="color:var(--text-muted)">
+          <input type="number" id="cls-vp-${r.player_name}" value="${r.victory_points}" min="0" max="10">
+          <input type="number" id="cls-rank-${r.player_name}" value="${r.ranking}" min="0" max="6">
+          <select id="cls-win-${r.player_name}">
+            <option value="false" ${r.winner === 'false' ? 'selected' : ''}>-</option>
+            <option value="true" ${r.winner === 'true' ? 'selected' : ''}>👑 Win</option>
+          </select>
+        </div>`).join('');
+            document.getElementById('close-extra').style.display = 'block';
+            document.getElementById('close-btn').style.display = 'block';
+        }
+
+        async function closeGame() {
+            const gid = document.getElementById('close-game-select').value;
+            const status = document.getElementById('close-status').value;
+            const duration = document.getElementById('close-duration').value;
+            const rows = gamesData.filter(r => r.game_id === gid);
+            rows.forEach(r => {
+                r.victory_points = document.getElementById('cls-vp-' + r.player_name)?.value || r.victory_points;
+                r.ranking = document.getElementById('cls-rank-' + r.player_name)?.value || r.ranking;
+                r.winner = document.getElementById('cls-win-' + r.player_name)?.value || r.winner;
+                r.status = status;
+                r.duration_days = duration;
+            });
+            showMsg('close-msg', 'loading', 'Closing game...');
+            try {
+                await fetchCSVs();
+                const updated = gamesData.map(r => r.game_id === gid ? (rows.find(x => x.player_name === r.player_name) || r) : r);
+                await ghPut('data/games.csv', serializeGames(updated), gamesSHA, `Close ${gid} as ${status}`);
+                await fetchCSVs();
+                populateGameSelects();
+                showMsg('close-msg', 'success', `Game closed as ${status}!`);
+            } catch (e) {
+                showMsg('close-msg', 'error', 'Error: ' + e.message);
+            }
+        }
+
+        // --- Init ---
+        window.onload = () => {
+            const saved = sessionStorage.getItem('ti4_token');
+            if (saved) {
+                token = saved;
+                document.getElementById('token-input').value = saved;
+                authenticate();
+            }
+        };
+    </script>
+</body>
+
+</html>
