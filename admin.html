@@ -5,15 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TI4 Admin</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
         :root {
             --bg: #0d1117;
             --surface: #161b22;
             --border: #30363d;
             --text: #e6edf3;
-            --text-muted: #8b949e;
+            --muted: #8b949e;
             --accent: #58a6ff;
-            --accent2: #f0883e;
+            --orange: #f0883e;
             --green: #3fb950;
             --red: #f85149;
             --yellow: #d29922;
@@ -43,22 +44,23 @@
 
         header h1 {
             font-size: 1.2rem;
-            color: var(--accent2);
+            color: var(--orange);
         }
 
-        header a {
-            color: var(--text-muted);
+        a {
+            color: var(--muted);
             font-size: 0.85rem;
             text-decoration: none;
+            cursor: pointer;
         }
 
-        header a:hover {
+        a:hover {
             color: var(--accent);
         }
 
         main {
             padding: 2rem;
-            max-width: 900px;
+            max-width: 960px;
             margin: 0 auto;
         }
 
@@ -78,10 +80,10 @@
 
         label {
             display: block;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-bottom: 0.3rem;
-            margin-top: 0.8rem;
+            color: var(--muted);
+            font-size: 0.82rem;
+            margin-bottom: 0.25rem;
+            margin-top: 0.75rem;
         }
 
         input,
@@ -91,9 +93,9 @@
             background: var(--bg);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 0.5rem 0.8rem;
+            padding: 0.45rem 0.7rem;
             border-radius: 6px;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
         }
 
         input:focus,
@@ -102,82 +104,64 @@
             border-color: var(--accent);
         }
 
-        button {
+        .btn {
+            display: inline-block;
             background: var(--accent);
             color: #000;
             border: none;
-            padding: 0.6rem 1.4rem;
+            padding: 0.55rem 1.2rem;
             border-radius: 6px;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 1rem;
+            margin-top: 0.8rem;
+            margin-right: 0.5rem;
         }
 
-        button:hover {
+        .btn:hover {
             opacity: 0.85;
         }
 
-        button.danger {
+        .btn-red {
             background: var(--red);
             color: #fff;
         }
 
-        button.secondary {
+        .btn-orange {
+            background: var(--orange);
+            color: #000;
+        }
+
+        .btn-gray {
             background: var(--surface);
             color: var(--text);
             border: 1px solid var(--border);
         }
 
-        .player-row {
-            display: grid;
-            grid-template-columns: 1fr 2fr 80px 80px 80px 80px;
-            gap: 0.5rem;
-            align-items: end;
-            margin-bottom: 0.5rem;
-        }
-
-        .player-row label {
-            margin: 0;
-        }
-
-        .row-header {
-            display: grid;
-            grid-template-columns: 1fr 2fr 80px 80px 80px 80px;
-            gap: 0.5rem;
-            margin-bottom: 0.3rem;
-        }
-
-        .row-header span {
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-        }
-
         .msg {
-            padding: 0.8rem 1rem;
+            padding: 0.7rem 1rem;
             border-radius: 6px;
-            margin-top: 1rem;
-            font-size: 0.9rem;
+            margin-top: 0.8rem;
+            font-size: 0.88rem;
             display: none;
         }
 
-        .msg.success {
-            background: rgba(63, 185, 80, 0.15);
+        .msg.ok {
+            background: rgba(63, 185, 80, .15);
             color: var(--green);
             border: 1px solid var(--green);
             display: block;
         }
 
-        .msg.error {
-            background: rgba(248, 81, 73, 0.15);
+        .msg.err {
+            background: rgba(248, 81, 73, .15);
             color: var(--red);
             border: 1px solid var(--red);
             display: block;
         }
 
-        .msg.loading {
-            background: rgba(88, 166, 255, 0.1);
+        .msg.load {
+            background: rgba(88, 166, 255, .1);
             color: var(--accent);
             border: 1px solid var(--accent);
             display: block;
@@ -185,7 +169,6 @@
 
         .tabs {
             display: flex;
-            gap: 0;
             border-bottom: 1px solid var(--border);
             margin-bottom: 1.5rem;
         }
@@ -193,13 +176,11 @@
         .tabs button {
             background: none;
             border: none;
-            color: var(--text-muted);
+            color: var(--muted);
             padding: 0.6rem 1.2rem;
             cursor: pointer;
             font-size: 0.9rem;
             border-bottom: 2px solid transparent;
-            border-radius: 0;
-            margin-top: 0;
         }
 
         .tabs button.active {
@@ -207,16 +188,16 @@
             border-bottom-color: var(--accent);
         }
 
-        .tab-content {
+        .tab {
             display: none;
         }
 
-        .tab-content.active {
+        .tab.active {
             display: block;
         }
 
-        #auth-section {
-            max-width: 500px;
+        #auth-wrap {
+            max-width: 480px;
             margin: 4rem auto;
         }
 
@@ -224,190 +205,184 @@
             display: none;
         }
 
-        .game-option {
-            padding: 0.4rem 0;
-            border-bottom: 1px solid var(--border);
+        .grid6 {
+            display: grid;
+            grid-template-columns: 1fr 2fr 70px 70px 90px;
+            gap: 0.4rem;
+            align-items: center;
+            margin-bottom: 0.4rem;
         }
 
-        .badge {
-            display: inline-block;
-            padding: 0.1rem 0.4rem;
-            border-radius: 4px;
+        .grid4 {
+            display: grid;
+            grid-template-columns: 1fr 2fr 70px 70px;
+            gap: 0.4rem;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
+
+        .grid5 {
+            display: grid;
+            grid-template-columns: 1fr 2fr 70px 70px 90px;
+            gap: 0.4rem;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
+
+        .col-hdr {
+            color: var(--muted);
             font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .badge-ongoing {
-            background: rgba(210, 153, 34, 0.15);
-            color: var(--yellow);
-        }
-
-        .badge-finished {
-            background: rgba(63, 185, 80, 0.15);
-            color: var(--green);
+            text-transform: uppercase;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Auth Screen -->
-    <div id="auth-section">
+    <div id="auth-wrap">
         <div class="card">
-            <h2 style="color:var(--accent2); font-size:1.2rem; margin-bottom:0.5rem;">TI4 Admin</h2>
-            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">
-                Enter your GitHub Personal Access Token to manage game data.<br>
-                Token needs <strong>repo</strong> scope. It's stored only in your browser session.
-            </p>
+            <h2 style="color:var(--orange);font-size:1.1rem;margin-bottom:.5rem;">TI4 Admin</h2>
+            <p style="color:var(--muted);font-size:.83rem;margin-bottom:.5rem;">GitHub token with <strong>repo</strong>
+                scope. Stored in session only.</p>
             <label>GitHub Token</label>
-            <input type="password" id="token-input" placeholder="ghp_...">
-            <button onclick="authenticate()">Connect</button>
+            <input type="password" id="tok" placeholder="ghp_...">
+            <button class="btn" onclick="doAuth()">Connect</button>
             <div id="auth-msg" class="msg"></div>
         </div>
     </div>
 
-    <!-- Main App -->
     <div id="app">
         <header>
-            <h1>TI4 Admin Panel</h1>
-            <div style="display:flex;gap:1rem;align-items:center;">
-                <span id="header-status" style="color:var(--text-muted); font-size:0.85rem;"></span>
-                <a href="index.html">← Back to site</a>
-                <a href="#" onclick="logout()">Logout</a>
+            <h1>TI4 Admin</h1>
+            <div style="display:flex;gap:1.2rem;align-items:center;">
+                <span id="hdr-status" style="color:var(--muted);font-size:.83rem;"></span>
+                <a href="index.html">← Site</a>
+                <a onclick="doLogout()">Logout</a>
             </div>
         </header>
         <main>
             <div class="tabs">
-                <button class="active" onclick="switchTab('start')">Start Game</button>
-                <button onclick="switchTab('update')">Update Game</button>
-                <button onclick="switchTab('close')">Close Game</button>
+                <button class="active" onclick="tab('start')">Start Game</button>
+                <button onclick="tab('update')">Update Game</button>
+                <button onclick="tab('close')">Close Game</button>
+                <button onclick="tab('delete')">Delete Game</button>
             </div>
 
-            <!-- START GAME -->
-            <div id="tab-start" class="tab-content active">
+            <!-- START -->
+            <div id="tab-start" class="tab active">
                 <div class="card">
                     <h2>Start New Game</h2>
-                    <label>Game ID (e.g. G23)</label>
-                    <input type="text" id="new-game-id" placeholder="G23">
-                    <label>Game Name</label>
-                    <input type="text" id="new-game-name" placeholder="Game 23">
-                    <label>Speaker (player name)</label>
-                    <input type="text" id="new-speaker" placeholder="Hektor">
-
-                    <div style="margin-top:1.2rem;">
-                        <div class="row-header">
-                            <span>Player</span><span>Race</span><span>Pick#</span><span>Speaker</span><span></span><span></span>
-                        </div>
-                        <div id="start-players"></div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+                        <div><label>Game ID</label><input id="s-id" placeholder="G23"></div>
+                        <div><label>Game Name</label><input id="s-name" placeholder="Game 23"></div>
                     </div>
-
                     <div style="margin-top:1rem;">
-                        <label>Banned Races (one per line)</label>
-                        <textarea id="new-bans" rows="4"
-                            placeholder="Yssaril Tribes&#10;Deepwrought Scholarate&#10;Crimson"></textarea>
-                        <label>Not Picked Races (one per line)</label>
-                        <textarea id="new-notpicked" rows="2" placeholder="Nomad"></textarea>
+                        <div class="grid6" style="margin-bottom:.3rem;">
+                            <span class="col-hdr">Player</span><span class="col-hdr">Race</span>
+                            <span class="col-hdr">Pick#</span><span class="col-hdr">Speaker</span><span></span>
+                        </div>
+                        <div id="s-players"></div>
                     </div>
-
-                    <button onclick="startGame()">Create Game</button>
+                    <label>Banned Races (one per line)</label>
+                    <textarea id="s-bans" rows="4" placeholder="Yssaril Tribes&#10;Deepwrought Scholarate"></textarea>
+                    <label>Not Picked Races (one per line)</label>
+                    <textarea id="s-np" rows="2" placeholder="Nomad"></textarea>
+                    <button class="btn" onclick="doStart()">Create Game</button>
                     <div id="start-msg" class="msg"></div>
                 </div>
             </div>
 
-            <!-- UPDATE GAME -->
-            <div id="tab-update" class="tab-content">
+            <!-- UPDATE -->
+            <div id="tab-update" class="tab">
                 <div class="card">
                     <h2>Update Ongoing Game</h2>
                     <label>Select Game</label>
-                    <select id="update-game-select" onchange="loadGameForUpdate()"></select>
-
-                    <div id="update-players" style="margin-top:1rem;"></div>
-
-                    <button onclick="updateGame()" style="display:none" id="update-btn">Save Update</button>
-                    <button onclick="endGameFromUpdate()" style="display:none; margin-left:0.5rem;" id="end-game-btn"
-                        class="danger">End Game</button>
+                    <select id="u-sel" onchange="loadUpdate()">
+                        <option value="">-- Select --</option>
+                    </select>
+                    <div id="u-players" style="margin-top:1rem;"></div>
+                    <div id="u-btns" style="display:none;">
+                        <button class="btn" onclick="doUpdate()">Save Update</button>
+                        <button class="btn btn-orange" onclick="doEndGame()">End Game ✅</button>
+                    </div>
                     <div id="update-msg" class="msg"></div>
                 </div>
             </div>
 
-            <!-- CLOSE GAME -->
-            <div id="tab-close" class="tab-content">
+            <!-- CLOSE -->
+            <div id="tab-close" class="tab">
                 <div class="card">
                     <h2>Close / Finish Game</h2>
                     <label>Select Game</label>
-                    <select id="close-game-select" onchange="loadGameForClose()"></select>
-
-                    <div id="close-players" style="margin-top:1rem;"></div>
-
-                    <div id="close-extra" style="display:none; margin-top:1rem;">
-                        <label>Duration (days)</label>
-                        <input type="number" id="close-duration" placeholder="14">
-                        <label>Status</label>
-                        <select id="close-status">
-                            <option value="finished">Finished</option>
-                            <option value="abandoned">Abandoned</option>
-                        </select>
+                    <select id="c-sel" onchange="loadClose()">
+                        <option value="">-- Select --</option>
+                    </select>
+                    <div id="c-players" style="margin-top:1rem;"></div>
+                    <div id="c-extra" style="display:none;">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.5rem;">
+                            <div><label>Duration (days)</label><input type="number" id="c-dur" placeholder="14"></div>
+                            <div><label>Status</label>
+                                <select id="c-status">
+                                    <option value="finished">Finished</option>
+                                    <option value="abandoned">Abandoned</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-
-                    <button onclick="closeGame()" style="display:none" id="close-btn" class="danger">Close Game</button>
+                    <button class="btn btn-red" id="c-btn" style="display:none;" onclick="doClose()">Close Game</button>
                     <div id="close-msg" class="msg"></div>
+                </div>
+            </div>
+
+            <!-- DELETE -->
+            <div id="tab-delete" class="tab">
+                <div class="card">
+                    <h2>Delete Game</h2>
+                    <p style="color:var(--muted);font-size:.85rem;margin-bottom:.5rem;">Removes all rows for a game from
+                        games.csv and bans.csv. Use for testing.</p>
+                    <label>Select Game</label>
+                    <select id="d-sel">
+                        <option value="">-- Select --</option>
+                    </select>
+                    <button class="btn btn-red" onclick="doDelete()">Delete Game</button>
+                    <div id="delete-msg" class="msg"></div>
                 </div>
             </div>
         </main>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script>
         const REPO = 'hansagif/ti4-reporter';
         const BRANCH = 'main';
-        const VP_POINTS = { 0: 0, 1: 0, 2: 1, 3: 3, 4: 6, 5: 10, 6: 16, 7: 24, 8: 34, 9: 46, 10: 68 };
-        const RANK_POINTS = { 0: 0, 1: 32, 2: 16, 3: 8, 4: 4, 5: 2, 6: 1 };
+        let token = '', gamesData = [], bansData = [], gamesSHA = '', bansSHA = '';
 
-        let token = '';
-        let gamesCSV = '', bansCSV = '';
-        let gamesSHA = '', bansSHA = '';
-        let gamesData = [], bansData = [];
-
-        const KNOWN_PLAYERS = ['Edi', 'Keyser', 'Hektor', 'Branea', 'Ioan', 'Jarod', 'Morthai', 'Adrim', 'Ciupi', 'Titelandru', 'Zuicky', 'Lyxye', 'Syll', 'VladC', 'Quacky', 'TonoSmen'];
-        const KNOWN_RACES = [
-            'Arborec', 'Argent Flight', 'Barony of Letnev', 'Clan of Saar', 'Council Keleres',
-            'Crimson', 'Deepwrought Scholarate', 'Emirates of Hacan', 'Empyrean', 'Federation of Sol',
-            'Firmament', 'Ghosts of Creuss', 'L1Z1X Mindnet', 'Mahact Gene-Sorcerers', 'Mentak Coalition',
-            'Naalu Collective', 'Naaz-Rokha Alliance', 'Nekro Virus', 'Nomad', 'Regal Authority of Ral-Nel',
-            'Sardakk N\'orr', 'The Last Bastion', 'Titans of Ul', 'Universities of Jol-Nar',
-            'Vuil\'raith Cabal', 'Winnu', 'Xxcha Kingdom', 'Yin Brotherhood', 'Yssaril Tribes',
-            'Embers of Muaat', 'Clan of Saar'
-        ].sort();
+        const PLAYERS = ['Adrim', 'Branea', 'Ciupi', 'Edi', 'Hektor', 'Ioan', 'Jarod', 'Keyser', 'Lyxye', 'Morthai', 'Quacky', 'Syll', 'Titelandru', 'TonoSmen', 'VladC', 'Zuicky'];
+        const RACES = ['Arborec', 'Argent Flight', 'Barony of Letnev', 'Clan of Saar', 'Council Keleres', 'Crimson', 'Deepwrought Scholarate', 'Emirates of Hacan', 'Empyrean', 'Federation of Sol', 'Firmament', 'Ghosts of Creuss', 'L1Z1X Mindnet', 'Mahact Gene-Sorcerers', 'Mentak Coalition', 'Naalu Collective', 'Naaz-Rokha Alliance', 'Nekro Virus', 'Nomad', 'Regal Authority of Ral-Nel', "Sardakk N'orr", 'The Last Bastion', 'Titans of Ul', 'Universities of Jol-Nar', "Vuil'raith Cabal", 'Winnu', 'Xxcha Kingdom', 'Yin Brotherhood', 'Yssaril Tribes', 'Embers of Muaat'].sort();
 
         // --- Auth ---
-        function authenticate() {
-            token = document.getElementById('token-input').value.trim();
-            if (!token) return showMsg('auth-msg', 'error', 'Please enter a token.');
-            showMsg('auth-msg', 'loading', 'Connecting...');
-            fetchCSVs().then(() => {
-                document.getElementById('auth-section').style.display = 'none';
+        async function doAuth() {
+            token = document.getElementById('tok').value.trim();
+            if (!token) return msg('auth-msg', 'err', 'Enter a token.');
+            msg('auth-msg', 'load', 'Connecting...');
+            try {
+                await loadCSVs();
+                sessionStorage.setItem('ti4tok', token);
+                document.getElementById('auth-wrap').style.display = 'none';
                 document.getElementById('app').style.display = 'block';
-                sessionStorage.setItem('ti4_token', token);
-                document.getElementById('header-status').textContent = `Connected to ${REPO}`;
-                buildStartPlayers();
-                populateGameSelects();
-            }).catch(e => showMsg('auth-msg', 'error', 'Failed: ' + e.message));
+                document.getElementById('hdr-status').textContent = REPO;
+                buildStartRows();
+                fillSelects();
+            } catch (e) { msg('auth-msg', 'err', 'Failed: ' + e.message); }
         }
-
-        function logout() {
-            sessionStorage.removeItem('ti4_token');
-            location.reload();
-        }
+        function doLogout() { sessionStorage.removeItem('ti4tok'); location.reload(); }
 
         // --- GitHub API ---
         async function ghGet(path) {
-            const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}`, {
-                headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
-            });
-            if (!r.ok) throw new Error(`GitHub API error: ${r.status}`);
+            const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}&t=${Date.now()}`,
+                { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } });
+            if (!r.ok) throw new Error('GitHub ' + r.status);
             return r.json();
         }
-
         async function ghPut(path, content, sha, message) {
             const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
                 method: 'PUT',
@@ -417,296 +392,227 @@
             if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
             return r.json();
         }
-
-        async function fetchCSVs() {
+        async function loadCSVs() {
             const [gf, bf] = await Promise.all([ghGet('data/games.csv'), ghGet('data/bans.csv')]);
-            gamesSHA = gf.sha;
-            bansSHA = bf.sha;
-            gamesCSV = decodeURIComponent(escape(atob(gf.content.replace(/\n/g, ''))));
-            bansCSV = decodeURIComponent(escape(atob(bf.content.replace(/\n/g, ''))));
-            parseCSVs();
+            gamesSHA = gf.sha; bansSHA = bf.sha;
+            const gText = decodeURIComponent(escape(atob(gf.content.replace(/\n/g, ''))));
+            const bText = decodeURIComponent(escape(atob(bf.content.replace(/\n/g, ''))));
+            gamesData = Papa.parse(gText, { header: true, skipEmptyLines: true }).data.map(r => ({ ...r, status: r.status.trim() }));
+            bansData = Papa.parse(bText, { header: true, skipEmptyLines: true }).data;
         }
 
-        function parseCSV(text) {
-            return Papa.parse(text, { header: true, skipEmptyLines: true }).data;
+        // --- Serialize ---
+        function serGames(data) {
+            const hdr = 'game_id,game_name,status,player_name,race,victory_points,ranking,winner,pick_order,speaker,duration_days';
+            return hdr + '\n' + data.map(r => `${r.game_id},${r.game_name},${r.status},${r.player_name},${r.race},${r.victory_points},${r.ranking},${r.winner},${r.pick_order},${r.speaker},${r.duration_days || ''}`).join('\n') + '\n';
         }
-
-        function parseCSVs() {
-            gamesData = parseCSV(gamesCSV);
-            bansData = parseCSV(bansCSV);
-        }
-
-        // --- CSV Serialization ---
-        function serializeGames(data) {
-            const header = 'game_id,game_name,status,player_name,race,victory_points,ranking,winner,pick_order,speaker,duration_days';
-            const rows = data.map(r =>
-                `${r.game_id},${r.game_name},${r.status},${r.player_name},${r.race},${r.victory_points},${r.ranking},${r.winner},${r.pick_order},${r.speaker},${r.duration_days || ''}`
-            );
-            return header + '\n' + rows.join('\n') + '\n';
-        }
-
-        function serializeBans(data) {
-            const header = 'game_id,race,type';
-            const rows = data.map(r => `${r.game_id},${r.race},${r.type}`);
-            return header + '\n' + rows.join('\n') + '\n';
-        }
-
-        // --- Tab switching ---
-        function switchTab(name) {
-            document.querySelectorAll('.tabs button').forEach((b, i) => b.classList.toggle('active', ['start', 'update', 'close'][i] === name));
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab-' + name).classList.add('active');
+        function serBans(data) {
+            return 'game_id,race,type\n' + data.map(r => `${r.game_id},${r.race},${r.type}`).join('\n') + '\n';
         }
 
         // --- Helpers ---
-        function showMsg(id, type, text) {
-            const el = document.getElementById(id);
-            el.className = 'msg ' + type;
-            el.textContent = text;
+        function msg(id, type, text) { const e = document.getElementById(id); e.className = 'msg ' + type; e.textContent = text; }
+        function pSel(id, val = '') {
+            return `<select id="${id}"><option value="">-- Player --</option>${PLAYERS.map(p => `<option value="${p}"${p === val ? ' selected' : ''}>${p}</option>`).join('')}<option value="__new__">+ New...</option></select>`;
         }
-
-        function raceSelect(id, val = '') {
-            return `<select id="${id}"><option value="">-- Race --</option>${KNOWN_RACES.map(r => `<option value="${r}" ${r === val ? 'selected' : ''}>${r}</option>`).join('')}</select>`;
+        function rSel(id, val = '') {
+            return `<select id="${id}"><option value="">-- Race --</option>${RACES.map(r => `<option value="${r}"${r === val ? ' selected' : ''}>${r}</option>`).join('')}</select>`;
         }
+        function tab(name) {
+            document.querySelectorAll('.tabs button').forEach((b, i) => b.classList.toggle('active', ['start', 'update', 'close', 'delete'][i] === name));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+        }
+        function nextGameId() {
+            const ids = [...new Set(gamesData.map(r => r.game_id))];
+            const max = ids.reduce((m, id) => Math.max(m, parseInt(id.replace('G', '')) || 0), 0);
+            return 'G' + String(max + 1).padStart(2, '0');
+        }
+        function getVal(id) { const e = document.getElementById(id); return e ? e.value : ''; }
 
-        function playerSelect(id, val = '') {
-            return `<select id="${id}"><option value="">-- Player --</option>${KNOWN_PLAYERS.map(p => `<option value="${p}" ${p === val ? 'selected' : ''}>${p}</option>`).join('')}<option value="__custom__">Other...</option></select>`;
+        // --- Fill selects ---
+        function fillSelects() {
+            const ongoing = [...new Set(gamesData.filter(r => r.status === 'ongoing').map(r => r.game_id))].sort((a, b) => parseInt(a.replace('G', '')) - parseInt(b.replace('G', '')));
+            const all = [...new Set(gamesData.map(r => r.game_id))].sort((a, b) => parseInt(a.replace('G', '')) - parseInt(b.replace('G', '')));
+
+            const opt = (gid, badge = '') => { const g = gamesData.find(r => r.game_id === gid); return `<option value="${gid}">${g.game_name}${badge}</option>`; };
+            document.getElementById('u-sel').innerHTML = '<option value="">-- Select --</option>' + ongoing.map(g => opt(g, ' 🔴')).join('');
+            document.getElementById('c-sel').innerHTML = '<option value="">-- Select --</option>' + ongoing.map(g => opt(g)).join('');
+            document.getElementById('d-sel').innerHTML = '<option value="">-- Select --</option>' + all.map(g => opt(g, ' (' + gamesData.find(r => r.game_id === g).status + ')')).join('');
         }
 
         // --- START GAME ---
-        function buildStartPlayers() {
-            const container = document.getElementById('start-players');
-            container.innerHTML = '';
+        function buildStartRows() {
+            const nid = nextGameId();
+            document.getElementById('s-id').value = nid;
+            document.getElementById('s-name').value = 'Game ' + parseInt(nid.replace('G', ''));
+            const c = document.getElementById('s-players');
+            c.innerHTML = '';
             for (let i = 1; i <= 6; i++) {
-                container.innerHTML += `
-        <div class="player-row">
-          ${playerSelect('sp-player-' + i)}
-          ${raceSelect('sp-race-' + i)}
-          <input type="number" id="sp-pick-${i}" value="${i}" min="1" max="6" placeholder="Pick#">
-          <select id="sp-speaker-${i}"><option value="false">-</option><option value="true">🔊</option></select>
-        </div>`;
+                c.innerHTML += `<div class="grid6">
+      ${pSel('sp-p' + i)} ${rSel('sp-r' + i)}
+      <input type="number" id="sp-pick${i}" value="${i}" min="1" max="6">
+      <select id="sp-spk${i}"><option value="false">-</option><option value="true">🔊</option></select>
+    </div>`;
             }
-            // Auto-fill next game ID
-            const ids = [...new Set(gamesData.map(r => r.game_id))];
-            const maxNum = ids.reduce((m, id) => Math.max(m, parseInt(id.replace('G', '')) || 0), 0);
-            const nextId = 'G' + String(maxNum + 1).padStart(2, '0');
-            document.getElementById('new-game-id').value = nextId;
-            document.getElementById('new-game-name').value = 'Game ' + (maxNum + 1);
         }
-
-        async function startGame() {
-            const gameId = document.getElementById('new-game-id').value.trim();
-            const gameName = document.getElementById('new-game-name').value.trim();
-            if (!gameId || !gameName) return showMsg('start-msg', 'error', 'Game ID and name required.');
-
+        async function doStart() {
+            const gid = getVal('s-id').trim();
+            const gname = getVal('s-name').trim();
+            if (!gid || !gname) return msg('start-msg', 'err', 'ID and name required.');
             const players = [];
             for (let i = 1; i <= 6; i++) {
-                const pEl = document.getElementById('sp-player-' + i);
-                let player = pEl.value;
-                if (player === '__custom__') player = prompt('Enter player name:') || '';
-                const race = document.getElementById('sp-race-' + i).value;
-                const pick = document.getElementById('sp-pick-' + i).value;
-                const speaker = document.getElementById('sp-speaker-' + i).value;
-                if (!player || !race) continue;
-                players.push({ player_name: player, race, pick_order: pick, speaker });
+                let p = getVal('sp-p' + i);
+                if (p === '__new__') p = prompt('Player name:') || '';
+                const r = getVal('sp-r' + i);
+                if (!p || !r) continue;
+                players.push({ player_name: p, race: r, pick_order: getVal('sp-pick' + i), speaker: getVal('sp-spk' + i) });
             }
-            if (players.length < 2) return showMsg('start-msg', 'error', 'Add at least 2 players.');
-
-            const newRows = players.map(p => ({
-                game_id: gameId, game_name: gameName, status: 'ongoing',
-                player_name: p.player_name, race: p.race,
-                victory_points: '0', ranking: '1', winner: 'false',
-                pick_order: p.pick_order, speaker: p.speaker, duration_days: ''
-            }));
-
-            const bansText = document.getElementById('new-bans').value.trim();
-            const npText = document.getElementById('new-notpicked').value.trim();
-            const newBans = bansText ? bansText.split('\n').filter(Boolean).map(r => ({ game_id: gameId, race: r.trim(), type: 'banned' })) : [];
-            const newNP = npText ? npText.split('\n').filter(Boolean).map(r => ({ game_id: gameId, race: r.trim(), type: 'not_picked' })) : [];
-
-            showMsg('start-msg', 'loading', 'Saving to GitHub...');
+            if (players.length < 2) return msg('start-msg', 'err', 'Need at least 2 players.');
+            const newRows = players.map(p => ({ game_id: gid, game_name: gname, status: 'ongoing', player_name: p.player_name, race: p.race, victory_points: '0', ranking: '1', winner: 'false', pick_order: p.pick_order, speaker: p.speaker, duration_days: '' }));
+            const bansText = getVal('s-bans').trim();
+            const npText = getVal('s-np').trim();
+            const newBans = bansText ? bansText.split('\n').filter(Boolean).map(r => ({ game_id: gid, race: r.trim(), type: 'banned' })) : [];
+            const newNP = npText ? npText.split('\n').filter(Boolean).map(r => ({ game_id: gid, race: r.trim(), type: 'not_picked' })) : [];
+            msg('start-msg', 'load', 'Saving...');
             try {
-                await fetchCSVs(); // refresh SHAs
-                const newGames = [...gamesData, ...newRows];
-                const newBansData = [...bansData, ...newBans, ...newNP];
-                await ghPut('data/games.csv', serializeGames(newGames), gamesSHA, `Start ${gameName}`);
-                const bf = await ghGet('data/bans.csv');
-                bansSHA = bf.sha;
-                await ghPut('data/bans.csv', serializeBans(newBansData), bansSHA, `Bans for ${gameName}`);
-                await fetchCSVs();
-                populateGameSelects();
-                showMsg('start-msg', 'success', `${gameName} created with ${players.length} players!`);
-            } catch (e) {
-                showMsg('start-msg', 'error', 'Error: ' + e.message);
-            }
+                await loadCSVs();
+                await ghPut('data/games.csv', serGames([...gamesData, ...newRows]), gamesSHA, `Start ${gname}`);
+                const bf = await ghGet('data/bans.csv'); bansSHA = bf.sha;
+                await ghPut('data/bans.csv', serBans([...bansData, ...newBans, ...newNP]), bansSHA, `Bans ${gname}`);
+                await loadCSVs(); fillSelects(); buildStartRows();
+                msg('start-msg', 'ok', `${gname} created!`);
+            } catch (e) { msg('start-msg', 'err', 'Error: ' + e.message); }
         }
 
         // --- UPDATE GAME ---
-        function populateGameSelects() {
-            const ongoing = [...new Set(gamesData.filter(r => r.status.trim() === 'ongoing').map(r => r.game_id))];
-            const finished = [...new Set(gamesData.filter(r => r.status.trim() === 'finished' || r.status.trim() === 'abandoned').map(r => r.game_id))];
-
-            const updateSel = document.getElementById('update-game-select');
-            updateSel.innerHTML = '<option value="">-- Select --</option>' +
-                ongoing.sort((a, b) => parseInt(a.replace('G', '')) - parseInt(b.replace('G', ''))).map(gid => {
-                    const g = gamesData.find(r => r.game_id === gid);
-                    return `<option value="${gid}">${g.game_name} 🔴</option>`;
-                }).join('');
-
-            const closeSel = document.getElementById('close-game-select');
-            closeSel.innerHTML = '<option value="">-- Select --</option>' +
-                ongoing.sort((a, b) => parseInt(a.replace('G', '')) - parseInt(b.replace('G', ''))).map(gid => {
-                    const g = gamesData.find(r => r.game_id === gid);
-                    return `<option value="${gid}">${g.game_name}</option>`;
-                }).join('');
-        }
-
-        function loadGameForUpdate() {
-            const gid = document.getElementById('update-game-select').value;
+        function loadUpdate() {
+            const gid = getVal('u-sel');
             if (!gid) return;
             const rows = gamesData.filter(r => r.game_id === gid);
-            const container = document.getElementById('update-players');
-            container.innerHTML = `
-      <div style="display:grid; grid-template-columns:1fr 2fr 80px 80px; gap:0.5rem; margin-bottom:0.3rem;">
-        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">Player</span>
-        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">Race</span>
-        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">VP</span>
-        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">Rank</span>
-      </div>` +
-                rows.map((r, i) => `
-        <div style="display:grid; grid-template-columns:1fr 2fr 80px 80px; gap:0.5rem; margin-bottom:0.5rem;">
-          ${playerSelect('upd-player-' + i, r.player_name)}
-          ${raceSelect('upd-race-' + i, r.race)}
-          <input type="number" id="upd-vp-${i}" value="${r.victory_points}" min="0" max="10">
-          <input type="number" id="upd-rank-${i}" value="${r.ranking}" min="0" max="6">
-        </div>`).join('');
-            document.getElementById('update-btn').style.display = 'block';
-            document.getElementById('end-game-btn').style.display = 'inline-block';
+            const c = document.getElementById('u-players');
+            c.innerHTML = `<div class="grid4" style="margin-bottom:.3rem;">
+    <span class="col-hdr">Player</span><span class="col-hdr">Race</span>
+    <span class="col-hdr">VP</span><span class="col-hdr">Rank</span></div>`+
+                rows.map((r, i) => `<div class="grid4">
+      ${pSel('up-p' + i, r.player_name)} ${rSel('up-r' + i, r.race)}
+      <input type="number" id="up-vp${i}" value="${r.victory_points}" min="0" max="10">
+      <input type="number" id="up-rk${i}" value="${r.ranking}" min="0" max="6">
+    </div>`).join('');
+            document.getElementById('u-btns').style.display = 'block';
         }
-
-        async function updateGame() {
-            const gid = document.getElementById('update-game-select').value;
+        async function doUpdate() {
+            const gid = getVal('u-sel');
             const rows = gamesData.filter(r => r.game_id === gid);
             rows.forEach((r, i) => {
-                const pEl = document.getElementById('upd-player-' + i);
-                if (pEl) r.player_name = pEl.value || r.player_name;
-                const raceEl = document.getElementById('upd-race-' + i);
-                if (raceEl) r.race = raceEl.value || r.race;
-                r.victory_points = document.getElementById('upd-vp-' + i)?.value ?? r.victory_points;
-                r.ranking = document.getElementById('upd-rank-' + i)?.value ?? r.ranking;
+                let p = getVal('up-p' + i); if (p === '__new__') p = prompt('Player name:') || r.player_name;
+                r.player_name = p || r.player_name;
+                r.race = getVal('up-r' + i) || r.race;
+                r.victory_points = getVal('up-vp' + i) || r.victory_points;
+                r.ranking = getVal('up-rk' + i) || r.ranking;
             });
-            showMsg('update-msg', 'loading', 'Saving...');
+            msg('update-msg', 'load', 'Saving...');
             try {
-                await fetchCSVs();
+                await loadCSVs();
                 const updated = gamesData.map(r => r.game_id === gid ? (rows.find(x => x.player_name === r.player_name) || r) : r);
-                await ghPut('data/games.csv', serializeGames(updated), gamesSHA, `Update ${gid}`);
-                await fetchCSVs();
-                loadGameForUpdate();
-                showMsg('update-msg', 'success', 'Game updated!');
-            } catch (e) {
-                showMsg('update-msg', 'error', 'Error: ' + e.message);
-            }
+                await ghPut('data/games.csv', serGames(updated), gamesSHA, `Update ${gid}`);
+                await loadCSVs(); fillSelects(); loadUpdate();
+                msg('update-msg', 'ok', 'Saved!');
+            } catch (e) { msg('update-msg', 'err', 'Error: ' + e.message); }
         }
-
-        async function endGameFromUpdate() {
-            const gid = document.getElementById('update-game-select').value;
-            if (!gid) return;
-            if (!confirm('Mark this game as finished? Make sure VP and rankings are correct first.')) return;
+        async function doEndGame() {
+            const gid = getVal('u-sel');
+            if (!gid || !confirm('Mark as finished? Make sure VP and rankings are correct.')) return;
             const rows = gamesData.filter(r => r.game_id === gid);
-            // Save current form values first
             rows.forEach((r, i) => {
-                const pEl = document.getElementById('upd-player-' + i);
-                if (pEl) r.player_name = pEl.value || r.player_name;
-                const raceEl = document.getElementById('upd-race-' + i);
-                if (raceEl) r.race = raceEl.value || r.race;
-                r.victory_points = document.getElementById('upd-vp-' + i)?.value ?? r.victory_points;
-                r.ranking = document.getElementById('upd-rank-' + i)?.value ?? r.ranking;
-                r.status = 'finished';
-                // Auto-set winner = player with rank 1
+                let p = getVal('up-p' + i); if (p === '__new__') p = r.player_name;
+                r.player_name = p || r.player_name;
+                r.race = getVal('up-r' + i) || r.race;
+                r.victory_points = getVal('up-vp' + i) || r.victory_points;
+                r.ranking = getVal('up-rk' + i) || r.ranking;
                 r.winner = r.ranking === '1' ? 'true' : 'false';
+                r.status = 'finished';
             });
-            showMsg('update-msg', 'loading', 'Marking game as finished...');
+            msg('update-msg', 'load', 'Finishing game...');
             try {
-                await fetchCSVs();
+                await loadCSVs();
                 const updated = gamesData.map(r => r.game_id === gid ? (rows.find(x => x.player_name === r.player_name) || r) : r);
-                await ghPut('data/games.csv', serializeGames(updated), gamesSHA, `Finish ${gid}`);
-                await fetchCSVs();
-                populateGameSelects();
-                document.getElementById('update-players').innerHTML = '';
-                document.getElementById('update-btn').style.display = 'none';
-                document.getElementById('end-game-btn').style.display = 'none';
-                showMsg('update-msg', 'success', `Game marked as finished!`);
-            } catch (e) {
-                showMsg('update-msg', 'error', 'Error: ' + e.message);
-            }
+                await ghPut('data/games.csv', serGames(updated), gamesSHA, `Finish ${gid}`);
+                await loadCSVs(); fillSelects();
+                document.getElementById('u-players').innerHTML = '';
+                document.getElementById('u-btns').style.display = 'none';
+                msg('update-msg', 'ok', 'Game finished!');
+            } catch (e) { msg('update-msg', 'err', 'Error: ' + e.message); }
         }
 
         // --- CLOSE GAME ---
-        function loadGameForClose() {
-            const gid = document.getElementById('close-game-select').value;
+        function loadClose() {
+            const gid = getVal('c-sel');
             if (!gid) return;
             const rows = gamesData.filter(r => r.game_id === gid);
-            const container = document.getElementById('close-players');
-            container.innerHTML = `
-      <div style="display:grid; grid-template-columns:1fr 2fr 80px 80px 80px; gap:0.5rem; margin-bottom:0.3rem;">
-        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">Player</span>
-        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">Race</span>
-        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">VP</span>
-        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">Rank</span>
-        <span style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;">Winner</span>
-      </div>` +
-                rows.map((r, i) => `
-        <div style="display:grid; grid-template-columns:1fr 2fr 80px 80px 80px; gap:0.5rem; margin-bottom:0.5rem;">
-          ${playerSelect('cls-player-' + i, r.player_name)}
-          ${raceSelect('cls-race-' + i, r.race)}
-          <input type="number" id="cls-vp-${i}" value="${r.victory_points}" min="0" max="10">
-          <input type="number" id="cls-rank-${i}" value="${r.ranking}" min="0" max="6">
-          <select id="cls-win-${i}">
-            <option value="false" ${r.winner === 'false' ? 'selected' : ''}>-</option>
-            <option value="true" ${r.winner === 'true' ? 'selected' : ''}>👑 Win</option>
-          </select>
-        </div>`).join('');
-            document.getElementById('close-extra').style.display = 'block';
-            document.getElementById('close-btn').style.display = 'block';
+            const c = document.getElementById('c-players');
+            c.innerHTML = `<div class="grid5" style="margin-bottom:.3rem;">
+    <span class="col-hdr">Player</span><span class="col-hdr">Race</span>
+    <span class="col-hdr">VP</span><span class="col-hdr">Rank</span><span class="col-hdr">Winner</span></div>`+
+                rows.map((r, i) => `<div class="grid5">
+      ${pSel('cp-p' + i, r.player_name)} ${rSel('cp-r' + i, r.race)}
+      <input type="number" id="cp-vp${i}" value="${r.victory_points}" min="0" max="10">
+      <input type="number" id="cp-rk${i}" value="${r.ranking}" min="0" max="6">
+      <select id="cp-win${i}"><option value="false"${r.winner === 'false' ? ' selected' : ''}>-</option><option value="true"${r.winner === 'true' ? ' selected' : ''}>👑 Win</option></select>
+    </div>`).join('');
+            document.getElementById('c-extra').style.display = 'block';
+            document.getElementById('c-btn').style.display = 'inline-block';
         }
-
-        async function closeGame() {
-            const gid = document.getElementById('close-game-select').value;
-            const status = document.getElementById('close-status').value;
-            const duration = document.getElementById('close-duration').value;
+        async function doClose() {
+            const gid = getVal('c-sel');
+            const status = getVal('c-status');
+            const dur = getVal('c-dur');
             const rows = gamesData.filter(r => r.game_id === gid);
             rows.forEach((r, i) => {
-                const pEl = document.getElementById('cls-player-' + i);
-                if (pEl) r.player_name = pEl.value || r.player_name;
-                const raceEl = document.getElementById('cls-race-' + i);
-                if (raceEl) r.race = raceEl.value || r.race;
-                r.victory_points = document.getElementById('cls-vp-' + i)?.value ?? r.victory_points;
-                r.ranking = document.getElementById('cls-rank-' + i)?.value ?? r.ranking;
-                r.winner = document.getElementById('cls-win-' + i)?.value ?? r.winner;
-                r.status = status;
-                r.duration_days = duration;
+                let p = getVal('cp-p' + i); if (p === '__new__') p = r.player_name;
+                r.player_name = p || r.player_name;
+                r.race = getVal('cp-r' + i) || r.race;
+                r.victory_points = getVal('cp-vp' + i) || r.victory_points;
+                r.ranking = getVal('cp-rk' + i) || r.ranking;
+                r.winner = getVal('cp-win' + i) || r.winner;
+                r.status = status; r.duration_days = dur;
             });
-            showMsg('close-msg', 'loading', 'Closing game...');
+            msg('close-msg', 'load', 'Closing...');
             try {
-                await fetchCSVs();
+                await loadCSVs();
                 const updated = gamesData.map(r => r.game_id === gid ? (rows.find(x => x.player_name === r.player_name) || r) : r);
-                await ghPut('data/games.csv', serializeGames(updated), gamesSHA, `Close ${gid} as ${status}`);
-                await fetchCSVs();
-                populateGameSelects();
-                showMsg('close-msg', 'success', `Game closed as ${status}!`);
-            } catch (e) {
-                showMsg('close-msg', 'error', 'Error: ' + e.message);
-            }
+                await ghPut('data/games.csv', serGames(updated), gamesSHA, `Close ${gid} as ${status}`);
+                await loadCSVs(); fillSelects();
+                document.getElementById('c-players').innerHTML = '';
+                document.getElementById('c-extra').style.display = 'none';
+                document.getElementById('c-btn').style.display = 'none';
+                msg('close-msg', 'ok', `Game closed as ${status}!`);
+            } catch (e) { msg('close-msg', 'err', 'Error: ' + e.message); }
+        }
+
+        // --- DELETE GAME ---
+        async function doDelete() {
+            const gid = getVal('d-sel');
+            if (!gid) return msg('delete-msg', 'err', 'Select a game.');
+            const g = gamesData.find(r => r.game_id === gid);
+            if (!confirm(`Delete ALL data for ${g.game_name}? This cannot be undone.`)) return;
+            msg('delete-msg', 'load', 'Deleting...');
+            try {
+                await loadCSVs();
+                const newGames = gamesData.filter(r => r.game_id !== gid);
+                const newBans = bansData.filter(r => r.game_id !== gid);
+                await ghPut('data/games.csv', serGames(newGames), gamesSHA, `Delete ${gid}`);
+                const bf = await ghGet('data/bans.csv'); bansSHA = bf.sha;
+                await ghPut('data/bans.csv', serBans(newBans), bansSHA, `Delete bans ${gid}`);
+                await loadCSVs(); fillSelects();
+                msg('delete-msg', 'ok', `${g.game_name} deleted.`);
+            } catch (e) { msg('delete-msg', 'err', 'Error: ' + e.message); }
         }
 
         // --- Init ---
         window.onload = () => {
-            const saved = sessionStorage.getItem('ti4_token');
-            if (saved) {
-                token = saved;
-                document.getElementById('token-input').value = saved;
-                authenticate();
-            }
+            const saved = sessionStorage.getItem('ti4tok');
+            if (saved) { document.getElementById('tok').value = saved; token = saved; doAuth(); }
         };
     </script>
 </body>
