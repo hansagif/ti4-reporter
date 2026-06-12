@@ -143,12 +143,12 @@ G26,Game 26 (TTS),finished,Quacky,Deepwrought Scholarate,9,2,false,1,false,1
 G26,Game 26 (TTS),finished,Syll,Universities of Jol-Nar,9,4,false,5,false,1
 G26,Game 26 (TTS),finished,Zuicky,Embers of Muaat,7,6,false,4,false,1
 G26,Game 26 (TTS),finished,Keyser,Empyrean,9,3,false,3,false,1
-G24,Game 24,ongoing,Zuicky,Embers of Muaat,8,3,false,1,false,
-G24,Game 24,ongoing,Lyxye,Clan of Saar,10,1,false,2,false,
-G24,Game 24,ongoing,Ioan,Xxcha Kingdom,8,2,false,3,false,
-G24,Game 24,ongoing,Syll,Crimson,6,4,false,4,false,
-G24,Game 24,ongoing,Morthai,Deepwrought Scholarate,5,6,false,5,true,
-G24,Game 24,ongoing,Quacky,Regal Authority of Ral-Nel,5,5,false,6,false,
+G24,Game 24,finished,Zuicky,Embers of Muaat,8,3,false,1,false,
+G24,Game 24,finished,Lyxye,Clan of Saar,10,1,true,2,false,
+G24,Game 24,finished,Ioan,Xxcha Kingdom,8,2,false,3,false,
+G24,Game 24,finished,Syll,Crimson,6,4,false,4,false,
+G24,Game 24,finished,Morthai,Deepwrought Scholarate,5,6,false,5,true,
+G24,Game 24,finished,Quacky,Regal Authority of Ral-Nel,5,5,false,6,false,
 G25,Game 25,finished,Branea,Yin Brotherhood,9,2,false,1,false,
 G25,Game 25,finished,Quacky,Arborec,7,6,false,2,false,
 G25,Game 25,finished,Ciupi,Regal Authority of Ral-Nel,9,4,false,3,false,
