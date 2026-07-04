@@ -526,7 +526,7 @@
 
         // --- Data Loading ---
         async function loadCSV(path) {
-            const res = await fetch(path);
+            const res = await fetch(path + '?v=' + Date.now());
             const text = await res.text();
             return Papa.parse(text, { header: true, skipEmptyLines: true }).data;
         }
@@ -643,11 +643,12 @@
             const tbody = document.querySelector('#standings-table tbody');
             tbody.innerHTML = stats.map((s, i) => {
                 const stars = '⭐'.repeat(s.wins);
+                const crown = s.wins >= 6 ? ' 👑' : '';
                 const qualLine = i === 5 ? '<tr><td colspan="11" style="border-bottom:2px solid var(--accent2); padding:0;"></td></tr>' : '';
                 const lead = i === 0 ? '-' : stats[i - 1].bestScore - s.bestScore;
                 return `<tr>
         <td>${i + 1}</td>
-        <td>${s.player} ${stars}</td>
+        <td>${s.player}${crown} ${stars}</td>
         <td class="num">${s.bestScore}</td>
         <td class="num" style="color:var(--text-muted)">${lead === '-' ? '-' : lead}</td>
         <td class="num" title="Deviation of last 3 finished games vs your average points" style="color:${s.form > 0 ? 'var(--green)' : s.form < 0 ? 'var(--red)' : 'var(--text-muted)'}">${s.form > 0 ? '+' : ''}${s.form}</td>
