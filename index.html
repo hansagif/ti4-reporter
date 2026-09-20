@@ -340,6 +340,7 @@
             <table id="race-table">
                 <thead>
                     <tr>
+                        <th class="num" data-rank="true">#</th>
                         <th data-sort="race">Race</th>
                         <th class="num" data-sort="games">Played</th>
                         <th class="num" data-sort="wins">Wins</th>
@@ -363,6 +364,7 @@
             <table id="picks-table">
                 <thead>
                     <tr>
+                        <th class="num" data-rank="true">#</th>
                         <th data-sort="race">Race</th>
                         <th class="num" data-sort="picked">Picked</th>
                         <th class="num" data-sort="banned">Banned</th>
@@ -878,7 +880,8 @@
             }).sort((a, b) => b.games - a.games);
 
             const tbody = document.querySelector('#race-table tbody');
-            tbody.innerHTML = stats.map(s => `<tr>
+            tbody.innerHTML = stats.map((s, i) => `<tr>
+        <td class="num">${i + 1}</td>
         <td>${s.race}</td>
         <td class="num">${s.games}</td>
         <td class="num">${s.wins}</td>
@@ -924,7 +927,8 @@
             }).sort((a, b) => b.banned - a.banned);
 
             const tbody = document.querySelector('#picks-table tbody');
-            tbody.innerHTML = stats.map(s => `<tr>
+            tbody.innerHTML = stats.map((s, i) => `<tr>
+        <td class="num">${i + 1}</td>
         <td>${s.race}</td>
         <td class="num">${s.picked}</td>
         <td class="num">${s.banned}</td>
@@ -1104,8 +1108,9 @@
                     const tbody = table.querySelector('tbody');
                     const headerCells = [...table.querySelectorAll('thead th')];
                     const keys = headerCells.map(h => h.dataset.sort).filter(Boolean);
-                    tbody.innerHTML = data.map(row => {
+                    tbody.innerHTML = data.map((row, i) => {
                         const cells = headerCells.map(h => {
+                            if (h.dataset.rank) return `<td class="num">${i + 1}</td>`;
                             const k = h.dataset.sort;
                             if (!k) return '';
                             const v = row[k];
