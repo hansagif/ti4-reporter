@@ -1,0 +1,79 @@
+game_id,game_name,status,player_name,race,victory_points,ranking,winner,pick_order,speaker,duration_days
+G01,Meciul 1,finished,Keyser,Clan of Saar,4,5,false,1,false,22
+G01,Meciul 1,finished,Edi,Firmament,3,6,false,4,true,22
+G01,Meciul 1,finished,lyxye,Naaz-Rokha Alliance,7,4,false,6,false,22
+G01,Meciul 1,finished,vRaul,Yin Brotherhood,8,3,false,3,false,22
+G01,Meciul 1,finished,Ciupi,Sardakk N'orr,9,2,false,2,false,22
+G01,Meciul 1,finished,Zuichy,Embers of Muaat,10,1,true,5,false,22
+G02,Meciul 2,finished,jarodtou,Empyrean,5,5,false,6,false,28
+G02,Meciul 2,finished,Hektor,Ghosts of Creuss,3,6,false,3,false,28
+G02,Meciul 2,finished,Freak_Dog,Yssaril Tribes,8,3,false,5,false,28
+G02,Meciul 2,finished,Luna,Winnu,9,2,false,2,true,28
+G02,Meciul 2,finished,Quacky,L1Z1X Mindnet,7,4,false,4,false,28
+G02,Meciul 2,finished,Sebastiannn,Universities of Jol-Nar,10,1,true,1,false,28
+G03,Meciul 3,finished,Keyser,Nekro Virus,5,4,false,5,true,30
+G03,Meciul 3,finished,jarodtou,Naalu Collective,4,5,false,4,false,30
+G03,Meciul 3,finished,Ioan76,Yin Brotherhood,3,6,false,6,false,30
+G03,Meciul 3,finished,vRaul,Clan of Saar,7,3,false,1,false,30
+G03,Meciul 3,finished,Quacky,Mahact Gene-Sorcerers,10,1,true,2,false,30
+G03,Meciul 3,finished,Zuichy,Naaz-Rokha Alliance,9,2,false,3,false,30
+G04,Meciul 4,finished,Edi,Titans of Ul,3,6,false,6,false,18
+G04,Meciul 4,finished,Hektor,Mentak Coalition,5,5,false,5,true,18
+G04,Meciul 4,finished,lyxye,The Last Bastion,6,4,false,4,false,18
+G04,Meciul 4,finished,Freak_Dog,Naalu Collective,9,2,false,3,false,18
+G04,Meciul 4,finished,Luna,Embers of Muaat,7,3,false,2,false,18
+G04,Meciul 4,finished,Ciupi,Nekro Virus,10,1,true,1,false,18
+G05,Meciul 5,finished,Keyser,Titans of Ul,6,3,false,3,false,24
+G05,Meciul 5,finished,Ioan76,Naalu Collective,5,4,false,4,true,24
+G05,Meciul 5,finished,Freak_Dog,Mentak Coalition,10,1,true,6,false,24
+G05,Meciul 5,finished,vRaul,Naaz-Rokha Alliance,8,2,false,1,false,24
+G05,Meciul 5,finished,Ciupi,Vuil'raith Cabal,3,6,false,5,false,24
+G05,Meciul 5,finished,Sebastiannn,Yssaril Tribes,4,5,false,2,false,24
+G06,Meciul 6,finished,jarodtou,Embers of Muaat,10,1,true,6,true,23
+G06,Meciul 6,finished,Edi,Arborec,4,5,false,2,false,23
+G06,Meciul 6,finished,lyxye,Barony of Letnev,3,6,false,5,false,23
+G06,Meciul 6,finished,Luna,Yssaril Tribes,6,3,false,4,false,23
+G06,Meciul 6,finished,Quacky,Mentak Coalition,7,2,false,1,false,23
+G06,Meciul 6,finished,Zuichy,Nomad,5,4,false,3,false,23
+G07,Meciul 7,finished,Hektor,The Last Bastion,5,5,false,1,false,13
+G07,Meciul 7,finished,Ioan76,Crimson,9,2,false,5,false,13
+G07,Meciul 7,finished,lyxye,Council Keleres,7,4,false,4,true,13
+G07,Meciul 7,finished,vRaul,Winnu,10,1,true,2,false,13
+G07,Meciul 7,finished,Ciupi,Xxcha Kingdom,8,3,false,3,false,13
+G07,Meciul 7,finished,Quacky,Nomad,3,6,false,6,false,13
+G08,Meciul 8,finished,Keyser,Naalu Collective,4,5,false,2,false,31
+G08,Meciul 8,finished,jarodtou,Mentak Coalition,6,3,false,1,false,31
+G08,Meciul 8,finished,Hektor,Nomad,5,4,false,5,false,31
+G08,Meciul 8,finished,Freak_Dog,Regal Authority of Ral-Nel,3,6,false,6,false,31
+G08,Meciul 8,finished,Luna,Winnu,10,1,true,4,false,31
+G08,Meciul 8,finished,Zuichy,Crimson,7,2,false,3,true,31
+G09,Meciul 9,finished,Edi,Yssaril Tribes,8,3,false,4,false,25
+G09,Meciul 9,finished,Ioan76,Arborec,7,4,false,6,false,25
+G09,Meciul 9,finished,Freak_Dog,Council Keleres,5,5,false,3,false,25
+G09,Meciul 9,finished,vRaul,Sardakk N'orr,10,1,true,2,false,25
+G09,Meciul 9,finished,Quacky,Naaz-Rokha Alliance,9,2,false,1,true,25
+G09,Meciul 9,finished,Sebastiannn,Deepwrought Scholarate,4,6,false,5,false,25
+G10,Meciul 10,finished,Keyser,Mentak Coalition,5,4,false,5,false,27
+G10,Meciul 10,finished,jarodtou,Clan of Saar,8,3,false,3,false,27
+G10,Meciul 10,finished,Edi,Naaz-Rokha Alliance,3,6,false,2,false,27
+G10,Meciul 10,finished,lyxye,Winnu,4,5,false,6,false,27
+G10,Meciul 10,finished,Ciupi,Yin Brotherhood,10,1,true,4,false,27
+G10,Meciul 10,finished,Sebastiannn,Empyrean,9,2,false,1,true,27
+G11,Meciul 11,finished,Hektor,Council Keleres,3,6,false,3,false,10
+G11,Meciul 11,finished,Ioan76,Clan of Saar,9,2,false,6,false,10
+G11,Meciul 11,finished,Freak_Dog,Winnu,10,1,true,1,false,10
+G11,Meciul 11,finished,Luna,Empyrean,8,3,false,4,true,10
+G11,Meciul 11,finished,Zuichy,Yssaril Tribes,5,5,false,2,false,10
+G11,Meciul 11,finished,Sebastiannn,Mahact Gene-Sorcerers,7,4,false,5,false,10
+G12,Meciul 12,finished,jarodtou,Argent Flight,7,3,false,3,true,33
+G12,Meciul 12,finished,Edi,Clan of Saar,6,4,false,5,false,33
+G12,Meciul 12,finished,Hektor,Emirates of Hacan,10,1,true,6,false,33
+G12,Meciul 12,finished,vRaul,Arborec,8,2,false,2,false,33
+G12,Meciul 12,finished,Ciupi,Federation of Sol,3,6,false,4,false,33
+G12,Meciul 12,finished,Quacky,Yssaril Tribes,5,5,false,1,false,33
+G13,Meciul 13,finished,Keyser,Titans of Ul,4,5,false,2,false,28
+G13,Meciul 13,finished,Ioan76,Mahact Gene-Sorcerers,10,1,true,5,false,28
+G13,Meciul 13,finished,lyxye,Arborec,7,3,false,3,false,28
+G13,Meciul 13,finished,Luna,Federation of Sol,3,6,false,4,true,28
+G13,Meciul 13,finished,Zuichy,Embers of Muaat,6,4,false,6,false,28
+G13,Meciul 13,finished,Sebastiannn,Firmament,8,2,false,1,false,28

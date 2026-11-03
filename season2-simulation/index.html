@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TI4 Reporter - Season 2 Simulation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent2: #f0883e;
+            --green: #3fb950;
+            --red: #f85149;
+            --yellow: #d29922;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            color: var(--accent);
+        }
+
+        header h1 span {
+            color: var(--accent2);
+        }
+
+        nav {
+            display: flex;
+            gap: 0;
+            margin-left: 2rem;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        nav button:hover {
+            color: var(--text);
+        }
+
+        nav button.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .season-switch {
+            margin-left: auto;
+            padding: 0.5rem 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .season-switch:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        select,
+        input {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th,
+        td {
+            padding: 0.5rem 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--surface);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        th:hover {
+            color: var(--accent);
+        }
+
+        th.sort-asc::after {
+            content: ' ▲';
+            font-size: 0.7rem;
+        }
+
+        th.sort-desc::after {
+            content: ' ▼';
+            font-size: 0.7rem;
+        }
+
+        tr:hover td {
+            background: rgba(88, 166, 255, 0.05);
+        }
+
+        .winner {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .ongoing {
+            color: var(--yellow);
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .card h3 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .stat-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.8rem;
+            text-align: center;
+        }
+
+        .stat-box .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-box .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .filters label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-finished {
+            background: rgba(63, 185, 80, 0.15);
+            color: var(--green);
+        }
+
+        .badge-ongoing {
+            background: rgba(210, 153, 34, 0.15);
+            color: var(--yellow);
+        }
+
+        .badge-scheduled {
+            background: rgba(88, 166, 255, 0.15);
+            color: var(--accent);
+        }
+
+        .badge-abandoned {
+            background: rgba(248, 81, 73, 0.15);
+            color: var(--red);
+        }
+
+        .player-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .player-card h3 {
+            color: var(--accent);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        td.player-highlight {
+            background: rgba(240, 136, 62, 0.35) !important;
+            outline: 1px solid var(--accent2);
+        }
+
+        #overview-table tr.game-match td {
+            background: rgba(88, 166, 255, 0.18);
+            border-bottom-color: var(--accent);
+        }
+
+        .player-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin: 1rem 0;
+        }
+
+        .player-filters button, #clear-player-filter {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.6rem 1rem;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .player-filters button[aria-pressed="true"] {
+            background: rgba(88, 166, 255, 0.18);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .player-filters button:focus-visible, #clear-player-filter:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        td.num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        th.num {
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>TI4 <span>Reporter</span> <small style="font-size:0.8rem;color:var(--yellow);">SIMULATION</small></h1>
+        <nav>
+            <button class="active" data-tab="standings">Standings</button>
+            <button data-tab="overview">Games Overview</button>
+            <button data-tab="games">Game Reports</button>
+            <button data-tab="races">Race Stats</button>
+            <button data-tab="picks">Picks &amp; Bans</button>
+            <button data-tab="players">Player Sheets</button>
+            <button data-tab="charts">Charts</button>
+            <button data-tab="scoring">Scoring</button>
+        </nav>
+        <a class="season-switch" href="../season2/">Real Season 2</a>
+    </header>
+    <main>
+        <!-- Standings Tab -->
+        <div id="tab-standings" class="tab-content active">
+            <table id="standings-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th data-sort="player">Player</th>
+                        <th class="num" data-sort="finishedGames">Finished Games</th>
+                        <th class="num" data-sort="wins">Wins</th>
+                        <th class="num" data-sort="ptsPerGame">Pts/Game</th>
+                        <th class="num" data-sort="totalPts">Total Points</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Games Overview Tab -->
+        <div id="tab-overview" class="tab-content">
+            <h2 style="margin-bottom:1rem; color:var(--text-muted); font-size:1rem;">All Games Overview</h2>
+            <div style="overflow-x:auto;">
+                <table id="overview-table">
+                    <thead>
+                        <tr>
+                            <th data-sort="game">Game</th>
+                            <th>1st</th>
+                            <th>2nd</th>
+                            <th>3rd</th>
+                            <th>4th</th>
+                            <th>5th</th>
+                            <th>6th</th>
+                            <th class="num" data-sort="totalVP">Total VP</th>
+                            <th class="num" data-sort="totalPts">Total Pts</th>
+                            <th class="num" data-sort="duration">Days</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <section class="card" style="margin-top:1.5rem;" aria-labelledby="player-filter-title">
+                <h3 id="player-filter-title">Find shared games</h3>
+                <p>Select players to highlight games containing every selected player. Click a name again to deselect.</p>
+                <div id="overview-player-filters" class="player-filters" role="group" aria-label="Players to match"></div>
+                <button id="clear-player-filter" type="button">Clear selection</button>
+                <p id="player-filter-summary" role="status" style="margin-top:1rem;"></p>
+            </section>
+        </div>
+
+        <!-- Game Reports Tab -->
+        <div id="tab-games" class="tab-content">
+            <div class="filters">
+                <label>Select Game:</label>
+                <select id="game-select"></select>
+            </div>
+            <div id="game-detail"></div>
+        </div>
+
+        <!-- Race Stats Tab -->
+        <div id="tab-races" class="tab-content">
+            <h2 style="margin-bottom:1rem; color:var(--text-muted); font-size:1rem;">Race Performance Overview</h2>
+            <table id="race-table">
+                <thead>
+                    <tr>
+                        <th class="num" data-rank="true">#</th>
+                        <th data-sort="race">Race</th>
+                        <th class="num" data-sort="games">Played</th>
+                        <th class="num" data-sort="wins">Wins</th>
+                        <th class="num" data-sort="winrate">Win%</th>
+                        <th class="num" data-sort="bans">Bans</th>
+                        <th class="num" data-sort="notpicked">Not Picked</th>
+                        <th class="num" data-sort="presence">Draft Presence</th>
+                        <th class="num" data-sort="avgvp">Avg VP</th>
+                        <th class="num" data-sort="avgpts">Avg Pts</th>
+                        <th class="num" data-sort="bestvp">Best VP</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Picks & Bans Tab -->
+        <div id="tab-picks" class="tab-content">
+            <h2 style="margin-bottom:1rem; color:var(--text-muted); font-size:1rem;">Race Pick &amp; Ban Statistics
+            </h2>
+            <table id="picks-table">
+                <thead>
+                    <tr>
+                        <th class="num" data-rank="true">#</th>
+                        <th data-sort="race">Race</th>
+                        <th class="num" data-sort="picked">Picked</th>
+                        <th class="num" data-sort="banned">Banned</th>
+                        <th class="num" data-sort="notpicked">Not Picked</th>
+                        <th class="num" data-sort="presence">Presence</th>
+                        <th class="num" data-sort="pickrate">Pick%</th>
+                        <th class="num" data-sort="banrate">Ban%</th>
+                        <th class="num" data-sort="avgvp">Avg VP</th>
+                        <th class="num" data-sort="winrate">Win%</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Player Sheets Tab -->
+        <div id="tab-players" class="tab-content">
+            <div class="filters">
+                <label>Select Player:</label>
+                <select id="player-select">
+                    <option value="all">All Players</option>
+                </select>
+            </div>
+            <div id="player-sheets"></div>
+        </div>
+
+        <!-- Charts Tab -->
+        <div id="tab-charts" class="tab-content">
+            <h2 style="margin-bottom:1rem; color:var(--text-muted); font-size:1rem;">Player Progression (Best 6)
+            </h2>
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:1rem;">
+                <canvas id="progression-chart" height="400"></canvas>
+            </div>
+        </div>
+
+        <!-- Scoring Tab -->
+        <div id="tab-scoring" class="tab-content">
+            <h2 style="margin-bottom:1rem; color:var(--text-muted); font-size:1rem;">Pointing System</h2>
+            <p style="color:var(--text-muted); margin-bottom:1.5rem;">Total Points per Game = Placement Score.
+                Victory points are recorded for reference but do not award league points.
+                The season score is the sum of placement points from each player's six games,
+                including negative scores.</p>
+            <div style="max-width:800px;">
+                <div class="card">
+                    <h3>Placement Score (PL)</h3>
+                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.8rem;">Points awarded
+                        based on
+                        final ranking</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Placement</th>
+                                <th class="num">Score (PL)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>6th place</td>
+                                <td class="num">-8</td>
+                            </tr>
+                            <tr>
+                                <td>5th place</td>
+                                <td class="num">-4</td>
+                            </tr>
+                            <tr>
+                                <td>4th place</td>
+                                <td class="num">+1</td>
+                            </tr>
+                            <tr>
+                                <td>3rd place</td>
+                                <td class="num">+4</td>
+                            </tr>
+                            <tr>
+                                <td>2nd place</td>
+                                <td class="num">+8</td>
+                            </tr>
+                            <tr style="color:var(--green); font-weight:600">
+                                <td>1st place</td>
+                                <td class="num">+15</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card" style="max-width:800px; margin-top:1.5rem;">
+                <h3>Example</h3>
+                <p style="color:var(--text-muted); line-height:1.6;">
+                    Finishing <span style="color:var(--accent)">1st</span> earns
+                    <span style="color:var(--green); font-weight:600">15 points</span>.
+                    Finishing 6th deducts 8 points. Six wins earn the maximum season score of 90 points.
+                </p>
+            </div>
+        </div>
+    </main>
+    <script>
+        let gamesData = [], bansData = [], playersData = [];
+
+        // --- League Scoring ---
+        const RANK_POINTS = { 1: 15, 2: 8, 3: 4, 4: 1, 5: -4, 6: -8 };
+
+        function calcRankPoints(rank) { return RANK_POINTS[rank] || 0; }
+
+        // --- Data Loading ---
+        async function loadCSV(path) {
+            const res = await fetch(path + '?v=' + Date.now());
+            const text = await res.text();
+            return Papa.parse(text, { header: true, skipEmptyLines: true }).data;
+        }
+
+        async function init() {
+            gamesData = await loadCSV('data/games.csv');
+            bansData = await loadCSV('data/bans.csv');
+            playersData = await loadCSV('data/players.csv');
+            // Enrich game data with computed points
+            gamesData.forEach(r => {
+                r.vp = Number(r.victory_points);
+                r.rank = Number(r.ranking);
+                r.rankPts = r.status === 'scheduled' ? 0 : calcRankPoints(r.rank);
+                r.totalPts = r.rankPts;
+            });
+            setupTabs();
+            renderStandings();
+            renderGamesOverview();
+            renderGameSelect();
+            renderRaceStats();
+            renderPicksBans();
+            renderPlayerSelect();
+            renderProgressionChart();
+        }
+
+        // --- Tab Navigation ---
+        function setupTabs() {
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+                });
+            });
+        }
+
+        // --- Standings ---
+        function getStandingsData(filter) {
+            const nonAbandoned = gamesData.filter(r => r.status !== 'abandoned' && r.status !== 'scheduled');
+            const filtered = filter === 'all' ? nonAbandoned :
+                nonAbandoned.filter(r => r.status === filter);
+            const players = {};
+            const names = new Set([...playersData.map(r => r.player_name), ...nonAbandoned.map(r => r.player_name)]);
+            names.forEach(name => {
+                players[name] = {
+                    finishedPts: [], livePts: [], allPts: [], wins: 0,
+                    finishedGames: 0, ongoingGames: 0, totalVP: 0, finishedVP: 0, totalGames: 0
+                };
+            });
+            filtered.forEach(r => {
+                const p = players[r.player_name];
+                if (!p) return;
+                p.totalGames++;
+                p.totalVP += r.vp;
+                if (r.status === 'finished') {
+                    p.finishedGames++;
+                    p.finishedPts.push(r.totalPts);
+                    p.finishedVP += r.vp;
+                    if (r.winner === 'true') p.wins++;
+                } else {
+                    p.ongoingGames++;
+                }
+                p.livePts.push(r.totalPts);
+                p.allPts.push(r.totalPts);
+            });
+            // Calculate league-wide average points per finished game
+            const allFinished = nonAbandoned.filter(r => r.status === 'finished');
+            const leagueAvg = allFinished.length ? allFinished.reduce((s, r) => s + r.totalPts, 0) / allFinished.length : 0;
+
+            return Object.entries(players).map(([name, p]) => {
+                const totalPts = p.finishedPts.reduce((a, b) => a + b, 0);
+                const livePts = p.livePts.reduce((a, b) => a + b, 0);
+                const best6Finished = [...p.finishedPts].sort((a, b) => b - a).slice(0, 6).reduce((a, b) => a + b, 0);
+                const best6Live = [...p.livePts].sort((a, b) => b - a).slice(0, 6).reduce((a, b) => a + b, 0);
+                const lastFinished = p.finishedPts.length ? p.finishedPts[p.finishedPts.length - 1] : 0;
+                const prevFinished = p.finishedPts.length > 1 ? p.finishedPts[p.finishedPts.length - 2] : 0;
+                const avg = p.finishedGames ? (totalPts / p.finishedGames) : 0;
+                const last3 = p.finishedPts.slice(-3);
+                const last3Sum = last3.reduce((a, b) => a + b, 0);
+                const form = last3.length ? Math.round((last3Sum - (avg * last3.length)) / last3.length) : 0;
+                const last3Avg = last3.length ? (last3Sum / last3.length) : 0;
+                const avgForm = last3.length ? Math.round(last3Avg - leagueAvg) : 0;
+                return {
+                    player: name,
+                    totalPts,
+                    livePts,
+                    finishedGames: p.finishedGames,
+                    participation: p.totalGames,
+                    wins: p.wins,
+                    winrate: p.finishedGames ? (p.wins / p.finishedGames * 100) : 0,
+                    ptsPerGame: p.finishedGames ? (totalPts / p.finishedGames) : 0,
+                    ptsPerGameLive: p.totalGames ? (livePts / p.totalGames) : 0,
+                    form: form,
+                    avgForm: avgForm,
+                    bestScore: best6Finished,
+                    bestScoreLive: best6Live,
+                    avgVP: p.finishedGames ? (p.finishedVP / p.finishedGames) : 0,
+                    ongoingGames: p.ongoingGames
+                };
+            });
+        }
+
+        function renderStandings() {
+            const stats = getStandingsData('finished');
+            // Default sort by bestScore
+            if (!renderStandings._sortKey) renderStandings._sortKey = 'bestScore';
+            if (!renderStandings._sortDir) renderStandings._sortDir = -1;
+            const sortKey = renderStandings._sortKey;
+            const sortDir = renderStandings._sortDir;
+            const isStr = typeof stats[0]?.[sortKey] === 'string';
+            stats.sort((a, b) => isStr ? sortDir * a[sortKey].localeCompare(b[sortKey]) : sortDir * (a[sortKey] - b[sortKey]));
+
+            const tbody = document.querySelector('#standings-table tbody');
+            tbody.innerHTML = stats.map((s, i) => {
+                const stars = '⭐'.repeat(s.wins);
+                const crown = s.wins >= 6 ? ' 👑' : '';
+                const qualLine = i === 5 ? '<tr><td colspan="6" style="border-bottom:2px solid var(--accent2); padding:0;"></td></tr>' : '';
+                return `<tr>
+        <td>${i + 1}</td>
+        <td>${s.player}${crown} ${stars}</td>
+        <td class="num">${s.finishedGames}</td>
+        <td class="num">${s.wins}</td>
+        <td class="num">${s.ptsPerGame.toFixed(1)}</td>
+        <td class="num">${s.totalPts}</td>
+      </tr>${qualLine}`;
+            }).join('');
+
+            // Column click sorting
+            const table = document.getElementById('standings-table');
+            table.querySelectorAll('th[data-sort]').forEach(th => {
+                th.onclick = () => {
+                    const key = th.dataset.sort;
+                    if (renderStandings._sortKey === key) {
+                        renderStandings._sortDir *= -1;
+                    } else {
+                        renderStandings._sortKey = key;
+                        renderStandings._sortDir = key === 'player' ? 1 : -1;
+                    }
+                    table.querySelectorAll('th').forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                    th.classList.add(renderStandings._sortDir === 1 ? 'sort-asc' : 'sort-desc');
+                    renderStandings();
+                };
+                // Show initial sort indicator
+                if (th.dataset.sort === sortKey) {
+                    th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+                }
+            });
+        }
+
+        // --- Games Overview ---
+        function renderGamesOverview() {
+            const gameIds = [...new Set(gamesData.map(r => r.game_id))];
+            gameIds.sort((a, b) => parseInt(a.replace('G', '')) - parseInt(b.replace('G', '')));
+
+            const rows = gameIds.map(gid => {
+                const players = gamesData.filter(r => r.game_id === gid);
+                const game = players[0];
+                const isAbandoned = game.status === 'abandoned';
+                const sorted = [...players].sort((a, b) => {
+                    const ra = Number(a.rank) === 0 ? 99 : Number(a.rank);
+                    const rb = Number(b.rank) === 0 ? 99 : Number(b.rank);
+                    return ra - rb;
+                });
+                const totalVP = isAbandoned ? 0 : players.reduce((s, r) => s + r.vp, 0);
+                const totalPts = isAbandoned ? 0 : players.reduce((s, r) => s + r.totalPts, 0);
+                const duration = game.duration_days ? Number(game.duration_days) : 0;
+                return { gid, game, sorted, totalVP, totalPts, isAbandoned, duration };
+            });
+
+            const tbody = document.querySelector('#overview-table tbody');
+            const selectedPlayers = new Set();
+            const filterButtons = document.getElementById('overview-player-filters');
+            const summary = document.getElementById('player-filter-summary');
+            function renderRows() {
+                let matches = 0;
+                tbody.innerHTML = rows.map(r => {
+                const isMatch = selectedPlayers.size > 0 &&
+                    [...selectedPlayers].every(name => r.sorted.some(player => player.player_name === name));
+                if (isMatch) matches++;
+                const nameStyle = r.isAbandoned ? 'color:var(--red); font-weight:600' : '';
+                const raceCells = r.sorted.map(p => {
+                    const isWinner = p.winner === 'true';
+                    const style = isWinner ? 'color:var(--green); font-weight:600; white-space:nowrap' : 'white-space:nowrap';
+                    const shortRace = p.race ? p.race.split(' ')[0] : 'TBD';
+                    const label = `${p.player_name} (${shortRace})`;
+                    return `<td style="${style}" data-player="${p.player_name}">${label}</td>`;
+                }).join('');
+                // Pad to 6 columns if fewer players
+                const pad = Array(Math.max(0, 6 - r.sorted.length)).fill('<td></td>').join('');
+                return `<tr data-game-id="${r.gid}"${isMatch ? ' class="game-match"' : ''}>
+                    <td style="${nameStyle}; white-space:nowrap">${r.game.game_name}${r.game.status === 'scheduled' ? ' (Scheduled)' : ''}</td>
+                    ${raceCells}${pad}
+                    <td class="num">${r.totalVP}</td>
+                    <td class="num">${r.totalPts}</td>
+                    <td class="num">${r.duration || '-'}</td>
+                </tr>`;
+                }).join('');
+                summary.textContent = selectedPlayers.size
+                    ? `${matches} matching ${matches === 1 ? 'game' : 'games'} for ${[...selectedPlayers].join(', ')}.`
+                    : 'No players selected. Select names above to find shared games.';
+            }
+            filterButtons.replaceChildren();
+            playersData.forEach(player => {
+                const name = player.player_name;
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.textContent = name;
+                button.setAttribute('aria-pressed', 'false');
+                button.addEventListener('click', () => {
+                    if (selectedPlayers.has(name)) selectedPlayers.delete(name);
+                    else selectedPlayers.add(name);
+                    button.setAttribute('aria-pressed', String(selectedPlayers.has(name)));
+                    renderRows();
+                });
+                filterButtons.append(button);
+            });
+            document.getElementById('clear-player-filter').onclick = () => {
+                selectedPlayers.clear();
+                filterButtons.querySelectorAll('button').forEach(button => button.setAttribute('aria-pressed', 'false'));
+                renderRows();
+            };
+            renderRows();
+
+            // Sorting
+            const table = document.getElementById('overview-table');
+            table.querySelectorAll('th[data-sort]').forEach(th => {
+                th.onclick = () => {
+                    const key = th.dataset.sort;
+                    const dir = th.classList.contains('sort-asc') ? -1 : 1;
+                    table.querySelectorAll('th').forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                    th.classList.add(dir === 1 ? 'sort-asc' : 'sort-desc');
+                    if (key === 'game') {
+                        rows.sort((a, b) => dir * (parseInt(a.gid.replace('G', '')) - parseInt(b.gid.replace('G', ''))));
+                    } else {
+                        rows.sort((a, b) => dir * (a[key] - b[key]));
+                    }
+                    renderRows();
+                };
+            });
+
+            // Player highlight on hover
+            table.addEventListener('mouseover', e => {
+                const td = e.target.closest('td[data-player]');
+                if (!td) return;
+                const name = td.dataset.player;
+                table.querySelectorAll('td[data-player]').forEach(cell => {
+                    cell.classList.toggle('player-highlight', cell.dataset.player === name);
+                });
+            });
+            table.addEventListener('mouseout', e => {
+                const td = e.target.closest('td[data-player]');
+                if (!td) return;
+                table.querySelectorAll('td.player-highlight').forEach(cell => {
+                    cell.classList.remove('player-highlight');
+                });
+            });
+        }
+
+        // --- Game Reports ---
+        function renderGameSelect() {
+            const select = document.getElementById('game-select');
+            const gameIds = [...new Set(gamesData.map(r => r.game_id))];
+            // Sort by game number
+            gameIds.sort((a, b) => {
+                const na = parseInt(a.replace('G', ''));
+                const nb = parseInt(b.replace('G', ''));
+                return na - nb;
+            });
+            select.innerHTML = gameIds.map(id => {
+                const game = gamesData.find(r => r.game_id === id);
+                const status = game.status === 'scheduled' ? ' (Scheduled)' : game.status === 'ongoing' ? ' 🔴 LIVE' : game.status === 'abandoned' ? ' ❌ ABANDONED' : ' ✅';
+                return `<option value="${id}">${game.game_name}${status}</option>`;
+            }).join('');
+            select.addEventListener('change', () => renderGameDetail(select.value));
+            if (gameIds.length) renderGameDetail(gameIds[0]);
+        }
+
+        function renderGameDetail(gameId) {
+            const rows = gamesData.filter(r => r.game_id === gameId);
+            const bans = bansData.filter(r => r.game_id === gameId);
+            if (!rows.length) return;
+            const game = rows[0];
+            const container = document.getElementById('game-detail');
+            const sorted = [...rows].sort((a, b) => {
+                const ra = Number(a.rank) === 0 ? 99 : Number(a.rank);
+                const rb = Number(b.rank) === 0 ? 99 : Number(b.rank);
+                return ra - rb;
+            });
+            const scheduled = game.status === 'scheduled';
+            const statusBadge = scheduled
+                ? '<span class="badge badge-scheduled">SCHEDULED</span>'
+                : game.status === 'ongoing'
+                ? '<span class="badge badge-ongoing">ONGOING</span>'
+                : game.status === 'abandoned'
+                    ? '<span class="badge badge-abandoned">ABANDONED</span>'
+                    : '<span class="badge badge-finished">FINISHED</span>';
+            const gameBans = bans.filter(b => b.type === 'banned');
+            const gameUnpicked = bans.filter(b => b.type === 'not_picked');
+
+            container.innerHTML = `
+        <div class="card">
+          <h3>${game.game_name} ${statusBadge}</h3>
+          <p style="color:var(--text-muted); margin-bottom:0.5rem;">${rows.length} players</p>
+          <table>
+            <thead><tr><th>Rank</th><th>Player</th><th>Race</th><th class="num">VP</th><th class="num">Rank Pts</th><th class="num">Total Pts</th><th class="num">Pick#</th><th>Speaker</th></tr></thead>
+            <tbody>
+              ${sorted.map(r => `<tr>
+                <td>${scheduled ? '-' : r.rank}</td>
+                <td class="${r.winner === 'true' ? 'winner' : ''}">${r.player_name} ${r.winner === 'true' ? '👑' : ''}</td>
+                <td>${r.race || 'TBD'}</td>
+                <td class="num">${scheduled ? '-' : r.vp}</td>
+                <td class="num">${scheduled ? '-' : r.rankPts}</td>
+                <td class="num" style="font-weight:600">${scheduled ? '-' : r.totalPts}</td>
+                <td class="num">${r.pick_order}</td>
+                <td>${r.speaker === 'true' ? '🔊' : ''}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        ${gameBans.length ? `<div class="card"><h3>Banned Races</h3>
+          <p style="color:var(--text-muted)">${gameBans.map(b => b.race).join(', ')}</p></div>` : ''}
+        ${gameUnpicked.length ? `<div class="card"><h3>Not Picked</h3>
+          <p style="color:var(--text-muted)">${gameUnpicked.map(b => b.race).join(', ')}</p></div>` : ''}
+      `;
+        }
+
+        // --- Race Stats ---
+        function renderRaceStats() {
+            const races = {};
+            const totalGames = new Set(gamesData.map(r => r.game_id)).size;
+            gamesData.filter(r => r.status !== 'scheduled' && r.race).forEach(r => {
+                if (!races[r.race]) races[r.race] = { games: 0, wins: 0, totalVP: 0, totalPts: 0, bestVP: 0 };
+                const s = races[r.race];
+                s.games++;
+                if (r.winner === 'true') s.wins++;
+                s.totalVP += r.vp;
+                s.totalPts += r.totalPts;
+                if (r.vp > s.bestVP) s.bestVP = r.vp;
+            });
+            // Count bans and not-picked
+            const banCounts = {}, notPickedCounts = {};
+            bansData.forEach(b => {
+                if (b.type === 'banned') banCounts[b.race] = (banCounts[b.race] || 0) + 1;
+                if (b.type === 'not_picked') notPickedCounts[b.race] = (notPickedCounts[b.race] || 0) + 1;
+            });
+            const allRaces = new Set([...Object.keys(races), ...Object.keys(banCounts), ...Object.keys(notPickedCounts)]);
+            const stats = [...allRaces].map(race => {
+                const s = races[race] || { games: 0, wins: 0, totalVP: 0, totalPts: 0, bestVP: 0 };
+                const bans = banCounts[race] || 0;
+                const np = notPickedCounts[race] || 0;
+                return {
+                    race, games: s.games, wins: s.wins,
+                    winrate: s.games ? (s.wins / s.games * 100) : 0,
+                    bans, notpicked: np,
+                    presence: s.games + bans + np,
+                    avgvp: s.games ? (s.totalVP / s.games) : 0,
+                    avgpts: s.games ? (s.totalPts / s.games) : 0,
+                    bestvp: s.bestVP
+                };
+            }).sort((a, b) => b.games - a.games);
+
+            const tbody = document.querySelector('#race-table tbody');
+            tbody.innerHTML = stats.map((s, i) => `<tr>
+        <td class="num">${i + 1}</td>
+        <td>${s.race}</td>
+        <td class="num">${s.games}</td>
+        <td class="num">${s.wins}</td>
+        <td class="num">${s.winrate.toFixed(0)}%</td>
+        <td class="num">${s.bans}</td>
+        <td class="num">${s.notpicked}</td>
+        <td class="num">${s.presence}</td>
+        <td class="num">${s.avgvp.toFixed(1)}</td>
+        <td class="num">${s.avgpts.toFixed(1)}</td>
+        <td class="num">${s.bestvp}</td>
+      </tr>`).join('');
+            makeSortable('race-table', stats);
+        }
+
+        // --- Picks & Bans ---
+        function renderPicksBans() {
+            const playedRows = gamesData.filter(r => r.status !== 'scheduled');
+            const totalGames = new Set(playedRows.map(r => r.game_id)).size;
+            const picks = {};
+            playedRows.filter(r => r.race).forEach(r => {
+                if (!picks[r.race]) picks[r.race] = { picked: 0, wins: 0, totalVP: 0 };
+                picks[r.race].picked++;
+                if (r.winner === 'true') picks[r.race].wins++;
+                picks[r.race].totalVP += r.vp;
+            });
+            const banCounts = {}, notPickedCounts = {};
+            bansData.forEach(b => {
+                if (b.type === 'banned') banCounts[b.race] = (banCounts[b.race] || 0) + 1;
+                if (b.type === 'not_picked') notPickedCounts[b.race] = (notPickedCounts[b.race] || 0) + 1;
+            });
+            const allRaces = new Set([...Object.keys(picks), ...Object.keys(banCounts), ...Object.keys(notPickedCounts)]);
+            const stats = [...allRaces].map(race => {
+                const p = picks[race] || { picked: 0, wins: 0, totalVP: 0 };
+                const banned = banCounts[race] || 0;
+                const np = notPickedCounts[race] || 0;
+                return {
+                    race, picked: p.picked, banned, notpicked: np,
+                    presence: p.picked + banned + np,
+                    pickrate: totalGames ? (p.picked / totalGames * 100) : 0,
+                    banrate: totalGames ? (banned / totalGames * 100) : 0,
+                    avgvp: p.picked ? (p.totalVP / p.picked) : 0,
+                    winrate: p.picked ? (p.wins / p.picked * 100) : 0
+                };
+            }).sort((a, b) => b.banned - a.banned);
+
+            const tbody = document.querySelector('#picks-table tbody');
+            tbody.innerHTML = stats.map((s, i) => `<tr>
+        <td class="num">${i + 1}</td>
+        <td>${s.race}</td>
+        <td class="num">${s.picked}</td>
+        <td class="num">${s.banned}</td>
+        <td class="num">${s.notpicked}</td>
+        <td class="num">${s.presence}</td>
+        <td class="num">${s.pickrate.toFixed(0)}%</td>
+        <td class="num">${s.banrate.toFixed(0)}%</td>
+        <td class="num">${s.avgvp.toFixed(1)}</td>
+        <td class="num">${s.winrate.toFixed(0)}%</td>
+      </tr>`).join('');
+            makeSortable('picks-table', stats);
+        }
+
+        // --- Player Sheets ---
+        function renderPlayerSelect() {
+            const select = document.getElementById('player-select');
+            const names = [...new Set(gamesData.map(r => r.player_name))].sort();
+            select.innerHTML = '<option value="all">All Players</option>' +
+                names.map(n => `<option value="${n}">${n}</option>`).join('');
+            select.addEventListener('change', () => renderPlayerSheets(select.value));
+            renderPlayerSheets('all');
+        }
+
+        function renderPlayerSheets(filter) {
+            const container = document.getElementById('player-sheets');
+            const names = filter === 'all'
+                ? [...new Set(gamesData.map(r => r.player_name))].sort()
+                : [filter];
+
+            container.innerHTML = names.map(name => {
+                const rows = gamesData.filter(r => r.player_name === name);
+                const nonAbandoned = rows.filter(r => r.status !== 'abandoned' && r.status !== 'scheduled');
+                const finished = rows.filter(r => r.status === 'finished');
+                const wins = finished.filter(r => r.winner === 'true').length;
+                const totalPts = finished.reduce((s, r) => s + r.totalPts, 0);
+                const livePts = nonAbandoned.reduce((s, r) => s + r.totalPts, 0);
+                const avgVP = nonAbandoned.length ? (nonAbandoned.reduce((s, r) => s + r.vp, 0) / nonAbandoned.length).toFixed(1) : '0';
+                const avgPts = finished.length ? (totalPts / finished.length).toFixed(1) : '0';
+                const racesPlayed = {};
+                nonAbandoned.forEach(r => {
+                    if (!racesPlayed[r.race]) racesPlayed[r.race] = { count: 0, vp: 0, pts: 0, wins: 0 };
+                    racesPlayed[r.race].count++;
+                    racesPlayed[r.race].vp += r.vp;
+                    racesPlayed[r.race].pts += r.totalPts;
+                    if (r.winner === 'true') racesPlayed[r.race].wins++;
+                });
+
+                return `<div class="player-card">
+          <h3>${name}</h3>
+          <div class="stat-grid">
+            <div class="stat-box"><div class="value">${nonAbandoned.length}</div><div class="label">Games</div></div>
+            <div class="stat-box"><div class="value">${finished.length}</div><div class="label">Finished</div></div>
+            <div class="stat-box"><div class="value">${wins}</div><div class="label">Wins</div></div>
+            <div class="stat-box"><div class="value">${finished.length ? (wins / finished.length * 100).toFixed(0) : 0}%</div><div class="label">Win Rate</div></div>
+            <div class="stat-box"><div class="value">${totalPts}</div><div class="label">Total Pts</div></div>
+            <div class="stat-box"><div class="value">${livePts}</div><div class="label">Live Pts</div></div>
+            <div class="stat-box"><div class="value">${avgPts}</div><div class="label">Avg Pts/Game</div></div>
+            <div class="stat-box"><div class="value">${avgVP}</div><div class="label">Avg VP</div></div>
+          </div>
+          <h4 style="margin-top:1rem; color:var(--text-muted); font-size:0.9rem;">Game History</h4>
+          <table>
+            <thead><tr><th>Game</th><th>Status</th><th>Race</th><th>VP</th><th>Rank</th><th>Rank Pts</th><th>Total Pts</th><th>Result</th></tr></thead>
+            <tbody>${rows.map(r => `<tr>
+              <td>${r.game_name}</td>
+              <td><span class="badge badge-${r.status}">${r.status}</span></td>
+              <td>${r.race || 'TBD'}</td>
+              <td class="num">${r.status === 'scheduled' ? '-' : r.vp}</td>
+              <td class="num">${r.status === 'scheduled' ? '-' : r.rank}</td>
+              <td class="num">${r.status === 'scheduled' ? '-' : r.rankPts}</td>
+              <td class="num" style="font-weight:600">${r.status === 'scheduled' ? '-' : r.totalPts}</td>
+              <td class="${r.winner === 'true' ? 'winner' : ''}">${r.winner === 'true' ? '👑 Winner' : ''}</td>
+            </tr>`).join('')}</tbody>
+          </table>
+          <h4 style="margin-top:1rem; color:var(--text-muted); font-size:0.9rem;">Races Played</h4>
+          <table>
+            <thead><tr><th>Race</th><th class="num">Times</th><th class="num">Total VP</th><th class="num">Total Pts</th><th class="num">Wins</th></tr></thead>
+            <tbody>${Object.entries(racesPlayed).sort((a, b) => b[1].pts - a[1].pts).map(([race, d]) => `
+              <tr><td>${race}</td><td class="num">${d.count}</td><td class="num">${d.vp}</td><td class="num">${d.pts}</td><td class="num">${d.wins}</td></tr>
+            `).join('')}</tbody>
+          </table>
+          <h4 style="margin-top:1rem; color:var(--text-muted); font-size:0.9rem;">Races Not Played</h4>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.5rem;">
+            ${(() => {
+                        const allRaces = [...new Set(gamesData.filter(r => r.status !== 'abandoned' && r.status !== 'scheduled' && r.race).map(r => r.race))].sort();
+                        const played = Object.keys(racesPlayed);
+                        const notPlayed = allRaces.filter(r => !played.includes(r));
+                        return !allRaces.length ? 'No races picked yet.' : notPlayed.length ? notPlayed.join(', ') : 'All races played!';
+                    })()}
+          </p>
+        </div>`;
+            }).join('');
+        }
+
+        // --- Progression Chart ---
+        function renderProgressionChart() {
+            const finished = gamesData.filter(r => r.status === 'finished');
+            // Get sorted unique game IDs
+            const gameIds = [...new Set(finished.map(r => r.game_id))];
+            gameIds.sort((a, b) => parseInt(a.replace('G', '')) - parseInt(b.replace('G', '')));
+            const gameLabels = gameIds.map(id => {
+                const g = finished.find(r => r.game_id === id);
+                return g ? g.game_name : id;
+            });
+
+            // For each player, compute cumulative best-6 score after each game
+            const players = [...new Set(finished.map(r => r.player_name))];
+            const colors = [
+                '#58a6ff', '#f0883e', '#3fb950', '#f85149', '#d29922',
+                '#a371f7', '#79c0ff', '#ffa657', '#7ee787', '#ff7b72',
+                '#e3b341', '#d2a8ff', '#56d4dd', '#f778ba', '#db61a2'
+            ];
+
+            const datasets = players.map((name, idx) => {
+                const playerGames = finished.filter(r => r.player_name === name);
+                const pts = []; // accumulated game points in order
+                const dataPoints = [];
+
+                gameIds.forEach(gid => {
+                    const row = playerGames.find(r => r.game_id === gid);
+                    if (row) pts.push(row.totalPts);
+                    // Best 6 sum so far
+                    const best6 = [...pts].sort((a, b) => b - a).slice(0, 6).reduce((a, b) => a + b, 0);
+                    dataPoints.push(row ? best6 : null);
+                });
+
+                return {
+                    label: name,
+                    data: dataPoints,
+                    borderColor: colors[idx % colors.length],
+                    backgroundColor: colors[idx % colors.length] + '20',
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    tension: 0.3,
+                    spanGaps: true
+                };
+            });
+
+            const ctx = document.getElementById('progression-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: { labels: gameLabels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#e6edf3', font: { size: 12 } }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#8b949e' },
+                            grid: { color: '#30363d' }
+                        },
+                        y: {
+                            ticks: { color: '#8b949e' },
+                            grid: { color: '#30363d' },
+                            title: { display: true, text: 'Best 6 Placement Points', color: '#8b949e' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- Generic Sortable Tables ---
+        function makeSortable(tableId, data) {
+            const table = document.getElementById(tableId);
+            table.querySelectorAll('th[data-sort]').forEach(th => {
+                th.addEventListener('click', () => {
+                    const key = th.dataset.sort;
+                    const isStr = typeof data[0]?.[key] === 'string';
+                    const dir = th.classList.contains('sort-asc') ? -1 : 1;
+                    table.querySelectorAll('th').forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                    th.classList.add(dir === 1 ? 'sort-asc' : 'sort-desc');
+                    data.sort((a, b) => isStr ? dir * a[key].localeCompare(b[key]) : dir * (a[key] - b[key]));
+                    const tbody = table.querySelector('tbody');
+                    const headerCells = [...table.querySelectorAll('thead th')];
+                    const keys = headerCells.map(h => h.dataset.sort).filter(Boolean);
+                    tbody.innerHTML = data.map((row, i) => {
+                        const cells = headerCells.map(h => {
+                            if (h.dataset.rank) return `<td class="num">${i + 1}</td>`;
+                            const k = h.dataset.sort;
+                            if (!k) return '';
+                            const v = row[k];
+                            const cls = h.classList.contains('num') ? ' class="num"' : '';
+                            if (typeof v === 'number' && !Number.isInteger(v)) return `<td${cls}>${v.toFixed(v < 1 ? 1 : (k.includes('rate') || k === 'winrate') ? 0 : 1)}${k.includes('rate') || k === 'winrate' || k === 'pickrate' || k === 'banrate' ? '%' : ''}</td>`;
+                            return `<td${cls}>${v}${k.includes('rate') || k === 'winrate' || k === 'pickrate' || k === 'banrate' ? '%' : ''}</td>`;
+                        });
+                        return `<tr>${cells.join('')}</tr>`;
+                    }).join('');
+                });
+            });
+        }
+
+        // --- Init ---
+        init();
+    </script>
+</body>
+
+</html>

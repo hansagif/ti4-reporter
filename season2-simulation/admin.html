@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TI4 Admin - Season 2 Simulation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --text: #e6edf3;
+            --muted: #8b949e;
+            --accent: #58a6ff;
+            --orange: #f0883e;
+            --green: #3fb950;
+            --red: #f85149;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        header h1 { font-size: 1.2rem; color: var(--orange); }
+        a { color: var(--accent); font-size: 0.85rem; text-decoration: none; }
+        main { padding: 2rem; max-width: 1100px; margin: 0 auto; }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        h2 { color: var(--accent); margin-bottom: 1rem; font-size: 1rem; }
+        p { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.5rem; }
+        label { display: block; color: var(--muted); font-size: 0.82rem; margin: 0.75rem 0 0.25rem; }
+        input, select, textarea {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.45rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.88rem;
+        }
+        input:focus, select:focus, textarea:focus { outline: 1px solid var(--accent); }
+        .btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            margin-top: 0.8rem;
+        }
+        .btn:disabled { opacity: 0.5; cursor: wait; }
+        .msg { padding: 0.7rem 1rem; border-radius: 6px; margin-top: 0.8rem; font-size: 0.88rem; }
+        .msg:empty { display: none; }
+        .msg.ok { color: var(--green); border: 1px solid var(--green); }
+        .msg.err { color: var(--red); border: 1px solid var(--red); }
+        .msg.load { color: var(--accent); border: 1px solid var(--accent); }
+        #auth-wrap { max-width: 480px; margin: 4rem auto; }
+        .table-wrap { overflow-x: auto; margin-top: 1rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.4rem; text-align: left; }
+        th { color: var(--muted); font-size: 0.75rem; }
+        td { font-size: 0.88rem; white-space: nowrap; }
+        td select { min-width: 180px; }
+        td input { min-width: 65px; }
+        td input[type="checkbox"] { min-width: 0; width: auto; }
+    </style>
+</head>
+<body>
+    <div id="auth-wrap">
+        <div class="card">
+            <h2>TI4 Admin - Season 2 Simulation</h2>
+            <p>GitHub token with <strong>repo</strong> scope. Stored in session only.
+                Changes are saved to the repository's main branch.</p>
+            <label for="tok">GitHub Token</label>
+            <input type="password" id="tok" placeholder="ghp_...">
+            <button class="btn" id="connect" onclick="doAuth()">Connect</button>
+            <div id="auth-msg" class="msg" role="status"></div>
+        </div>
+    </div>
+    <div id="app" hidden>
+        <header>
+            <h1>TI4 Admin - Season 2 Simulation</h1>
+            <div>
+                <a href="index.html">Simulation Site</a>
+                <button class="btn" onclick="doLogout()">Logout</button>
+            </div>
+        </header>
+        <main>
+            <div class="card">
+                <h2>Update Game</h2>
+                <p>The season's 13 games and player lineups are fixed. Select a game to update its setup or results.</p>
+                <label for="game-select">Game</label>
+                <select id="game-select" onchange="loadGame()">
+                    <option value="">-- Select --</option>
+                </select>
+                <form id="game-form" hidden onsubmit="saveGame(event)">
+                    <label for="game-status">Status</label>
+                    <select id="game-status">
+                        <option value="scheduled">Scheduled</option>
+                        <option value="ongoing">Ongoing</option>
+                        <option value="finished">Finished</option>
+                        <option value="abandoned">Abandoned</option>
+                    </select>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Player</th><th>Race</th><th>Pick #</th><th>Speaker</th><th>VP</th><th>Rank</th></tr></thead>
+                            <tbody id="players"></tbody>
+                        </table>
+                    </div>
+                    <label for="banned">Banned Races (one per line)</label>
+                    <textarea id="banned" rows="4"></textarea>
+                    <label for="not-picked">Not Picked Races (one per line)</label>
+                    <textarea id="not-picked" rows="3"></textarea>
+                    <label for="duration">Duration (days)</label>
+                    <input type="number" id="duration" min="0" step="1">
+                    <p style="margin-top:0.8rem;">Finished games require ranks 1-6, one per player.
+                        League points: +15, +8, +4, +1, -4, -8. The winner is determined by rank 1.</p>
+                    <button class="btn" id="save" type="submit">Save Update</button>
+                </form>
+                <div id="update-msg" class="msg" role="status"></div>
+            </div>
+        </main>
+    </div>
+    <script>
+        const REPO = 'hansagif/ti4-reporter';
+        const BRANCH = 'main';
+        const RACES = ['Arborec', 'Argent Flight', 'Barony of Letnev', 'Clan of Saar', 'Council Keleres', 'Crimson', 'Deepwrought Scholarate', 'Emirates of Hacan', 'Empyrean', 'Federation of Sol', 'Firmament', 'Ghosts of Creuss', 'L1Z1X Mindnet', 'Mahact Gene-Sorcerers', 'Mentak Coalition', 'Naalu Collective', 'Naaz-Rokha Alliance', 'Nekro Virus', 'Nomad', 'Regal Authority of Ral-Nel', "Sardakk N'orr", 'The Last Bastion', 'Titans of Ul', 'Universities of Jol-Nar', "Vuil'raith Cabal", 'Winnu', 'Xxcha Kingdom', 'Yin Brotherhood', 'Yssaril Tribes', 'Embers of Muaat'].sort();
+        let token = '', gamesData = [], bansData = [], gamesSHA = '', bansSHA = '';
+
+        function msg(id, type, text) {
+            const element = document.getElementById(id);
+            element.className = 'msg ' + type;
+            element.textContent = text;
+        }
+        function escapeHTML(value) {
+            return String(value).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+        }
+        function getVal(id) { return document.getElementById(id).value; }
+        async function ghGet(path) {
+            const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}&t=${Date.now()}`, {
+                headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+            });
+            if (!response.ok) throw new Error('GitHub ' + response.status);
+            return response.json();
+        }
+        async function ghPut(path, content, sha, message) {
+            const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+                method: 'PUT',
+                headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message, content: btoa(unescape(encodeURIComponent(content))), sha, branch: BRANCH })
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'GitHub ' + response.status);
+            }
+            return response.json();
+        }
+        function parseFile(file) {
+            const text = decodeURIComponent(escape(atob(file.content.replace(/\n/g, ''))));
+            const result = Papa.parse(text, { header: true, skipEmptyLines: true });
+            if (result.errors.length) throw new Error('Invalid CSV: ' + result.errors[0].message);
+            return result.data;
+        }
+        async function loadCSVs() {
+            const [games, bans] = await Promise.all([ghGet('season2-simulation/data/games.csv'), ghGet('season2-simulation/data/bans.csv')]);
+            gamesData = parseFile(games);
+            bansData = parseFile(bans);
+            gamesSHA = games.sha;
+            bansSHA = bans.sha;
+        }
+        async function doAuth() {
+            token = getVal('tok').trim();
+            if (!token) return msg('auth-msg', 'err', 'Enter a token.');
+            document.getElementById('connect').disabled = true;
+            msg('auth-msg', 'load', 'Connecting...');
+            try {
+                await loadCSVs();
+                sessionStorage.setItem('ti4tok', token);
+                fillSelect();
+                document.getElementById('auth-wrap').hidden = true;
+                document.getElementById('app').hidden = false;
+            } catch (error) {
+                msg('auth-msg', 'err', 'Failed: ' + error.message);
+            } finally {
+                document.getElementById('connect').disabled = false;
+            }
+        }
+        function doLogout() { sessionStorage.removeItem('ti4tok'); location.reload(); }
+        function fillSelect(selected = '') {
+            const ids = [...new Set(gamesData.map(row => row.game_id))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+            document.getElementById('game-select').innerHTML = '<option value="">-- Select --</option>' + ids.map(id => {
+                const game = gamesData.find(row => row.game_id === id);
+                return `<option value="${escapeHTML(id)}">${escapeHTML(game.game_name)} (${escapeHTML(game.status)})</option>`;
+            }).join('');
+            document.getElementById('game-select').value = selected;
+        }
+        function loadGame() {
+            const id = getVal('game-select');
+            const rows = gamesData.filter(row => row.game_id === id);
+            document.getElementById('game-form').hidden = !rows.length;
+            msg('update-msg', '', '');
+            if (!rows.length) return;
+            document.getElementById('game-status').value = rows[0].status;
+            document.getElementById('duration').value = rows[0].duration_days;
+            document.getElementById('players').innerHTML = rows.map((row, i) => `<tr>
+                <td>${escapeHTML(row.player_name)}</td>
+                <td><select id="race-${i}" aria-label="${escapeHTML(row.player_name)} race">
+                    <option value="">-- Race --</option>${RACES.map(race => `<option value="${escapeHTML(race)}"${race === row.race ? ' selected' : ''}>${escapeHTML(race)}</option>`).join('')}
+                </select></td>
+                <td><input id="pick-${i}" aria-label="${escapeHTML(row.player_name)} pick order" type="number" min="1" max="6" step="1" value="${escapeHTML(row.pick_order)}"></td>
+                <td><input id="speaker-${i}" aria-label="${escapeHTML(row.player_name)} speaker" type="checkbox"${row.speaker === 'true' ? ' checked' : ''}></td>
+                <td><input id="vp-${i}" aria-label="${escapeHTML(row.player_name)} VP" type="number" min="0" max="10" step="1" value="${escapeHTML(row.victory_points)}"></td>
+                <td><input id="rank-${i}" aria-label="${escapeHTML(row.player_name)} rank" type="number" min="1" max="6" step="1" value="${escapeHTML(row.ranking === '0' ? '' : row.ranking)}"></td>
+            </tr>`).join('');
+            document.getElementById('banned').value = bansData.filter(row => row.game_id === id && row.type === 'banned').map(row => row.race).join('\n');
+            document.getElementById('not-picked').value = bansData.filter(row => row.game_id === id && row.type === 'not_picked').map(row => row.race).join('\n');
+        }
+        function readBans(id, input, type) {
+            return getVal(input).split('\n').map(race => race.trim()).filter(Boolean).map(race => {
+                if (!RACES.includes(race)) throw new Error('Unknown race: ' + race);
+                return { game_id: id, race, type };
+            });
+        }
+        function readUpdate(id) {
+            const status = getVal('game-status');
+            if (!['scheduled', 'ongoing', 'finished', 'abandoned'].includes(status)) throw new Error('Choose a valid status.');
+            const existing = gamesData.filter(row => row.game_id === id);
+            if (existing.length !== 6) throw new Error('Select an existing six-player game.');
+            const rows = existing.map((row, i) => ({
+                ...row, status, race: getVal('race-' + i), pick_order: getVal('pick-' + i),
+                speaker: String(document.getElementById('speaker-' + i).checked),
+                victory_points: getVal('vp-' + i), ranking: getVal('rank-' + i),
+                winner: String(status === 'finished' && getVal('rank-' + i) === '1'),
+                duration_days: getVal('duration')
+            }));
+            if (status === 'ongoing' || status === 'finished') {
+                if (rows.some(row => !row.race)) throw new Error('Choose a race for every player before starting or finishing.');
+            }
+            const chosenRaces = rows.map(row => row.race).filter(Boolean);
+            if (new Set(chosenRaces).size !== chosenRaces.length) throw new Error('Players must have different races.');
+            const picks = rows.map(row => row.pick_order).filter(Boolean);
+            if (new Set(picks).size !== picks.length) throw new Error('Pick orders must be unique.');
+            if (rows.filter(row => row.speaker === 'true').length > 1) throw new Error('Choose at most one speaker.');
+            if (status === 'finished') {
+                const ranks = rows.map(row => Number(row.ranking)).sort((a, b) => a - b);
+                if (ranks.join(',') !== '1,2,3,4,5,6') throw new Error('Finished games require each rank from 1 to 6 exactly once.');
+                if (rows.some(row => row.victory_points === '')) throw new Error('Enter VP for every player before finishing.');
+            }
+            const bans = [...readBans(id, 'banned', 'banned'), ...readBans(id, 'not-picked', 'not_picked')];
+            const listedRaces = [...chosenRaces, ...bans.map(row => row.race)];
+            if (new Set(listedRaces).size !== listedRaces.length) throw new Error('A race can appear only once across picks, bans, and not-picked races.');
+            return { rows, bans };
+        }
+        async function saveGame(event) {
+            event.preventDefault();
+            const id = getVal('game-select');
+            const save = document.getElementById('save');
+            const select = document.getElementById('game-select');
+            let wroteGames = false;
+            save.disabled = true;
+            select.disabled = true;
+            msg('update-msg', 'load', 'Saving...');
+            try {
+                if (!document.getElementById('game-form').reportValidity()) throw new Error('Correct the highlighted fields.');
+                const { rows, bans } = readUpdate(id);
+                const expectedGamesSHA = gamesSHA, expectedBansSHA = bansSHA;
+                await loadCSVs();
+                if (gamesSHA !== expectedGamesSHA || bansSHA !== expectedBansSHA) {
+                    throw new Error('Data changed in the repository. Reselect the game to load the latest data before saving.');
+                }
+                const updated = gamesData.map(row => row.game_id === id ? rows.find(update => update.player_name === row.player_name) : row);
+                const updatedBans = [...bansData.filter(row => row.game_id !== id), ...bans];
+                await ghPut('season2-simulation/data/games.csv', Papa.unparse(updated) + '\n', gamesSHA, `Update ${rows[0].game_name}`);
+                wroteGames = true;
+                if (Papa.unparse(updatedBans) !== Papa.unparse(bansData)) {
+                    const csv = updatedBans.length ? Papa.unparse(updatedBans) : 'game_id,race,type';
+                    await ghPut('season2-simulation/data/bans.csv', csv + '\n', bansSHA, `Update bans for ${rows[0].game_name}`);
+                }
+                await loadCSVs();
+                fillSelect(id);
+                loadGame();
+                msg('update-msg', 'ok', 'Game saved.');
+            } catch (error) {
+                msg('update-msg', 'err', (wroteGames ? 'Game data was saved, but bans or the refresh may be incomplete. Reconnect before retrying. ' : '') + error.message);
+            } finally {
+                save.disabled = false;
+                select.disabled = false;
+            }
+        }
+        window.onload = () => {
+            const saved = sessionStorage.getItem('ti4tok');
+            if (saved) {
+                document.getElementById('tok').value = saved;
+                doAuth();
+            }
+        };
+    </script>
+</body>
+</html>
