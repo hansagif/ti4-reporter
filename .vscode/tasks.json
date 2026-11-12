@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Serve TI4 locally",
+			"type": "shell",
+			"command": "python3",
+			"args": [
+				"serve.py"
+			],
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

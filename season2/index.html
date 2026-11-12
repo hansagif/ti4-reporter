@@ -823,13 +823,16 @@
                     : '<span class="badge badge-finished">FINISHED</span>';
             const gameBans = bans.filter(b => b.type === 'banned');
             const gameUnpicked = bans.filter(b => b.type === 'not_picked');
+            const draftRaces = game.draft_races ? game.draft_races.split('|')
+                : rows.filter(r => r.race && r.pick_order).sort((a, b) => Number(a.pick_order) - Number(b.pick_order)).map(r => r.race);
 
             container.innerHTML = `
         <div class="card">
           <h3>${game.game_name} ${statusBadge}</h3>
-          <p style="color:var(--text-muted); margin-bottom:0.5rem;">${rows.length} players</p>
+          <p style="color:var(--text-muted); margin-bottom:0.5rem;">${rows.length} players &middot; Duration: ${game.duration_days || '-'} days</p>
+          <div style="overflow-x:auto">
           <table>
-            <thead><tr><th>Rank</th><th>Player</th><th>Race</th><th class="num">VP</th><th class="num">Rank Pts</th><th class="num">Total Pts</th><th class="num">Pick#</th><th>Speaker</th></tr></thead>
+            <thead><tr><th>Rank</th><th>Player</th><th>Race</th><th class="num">VP</th><th class="num">Rank Pts</th><th class="num">Total Pts</th><th class="num">Pick#</th><th class="num">Starting position</th><th class="num">Turns</th><th>Avg turn time</th><th>Speaker</th></tr></thead>
             <tbody>
               ${sorted.map(r => `<tr>
                 <td>${scheduled ? '-' : r.rank}</td>
@@ -839,11 +842,16 @@
                 <td class="num">${scheduled ? '-' : r.rankPts}</td>
                 <td class="num" style="font-weight:600">${scheduled ? '-' : r.totalPts}</td>
                 <td class="num">${r.pick_order}</td>
+                <td class="num">${r.starting_position || '-'}</td>
+                <td class="num">${r.turns === '' || r.turns == null ? '-' : r.turns}</td>
+                <td>${r.avg_turn_minutes === '' || r.avg_turn_minutes == null ? '-' : `${Math.floor(Number(r.avg_turn_minutes) / 60)}h ${Number(r.avg_turn_minutes) % 60}m`}</td>
                 <td>${r.speaker === 'true' ? '🔊' : ''}</td>
               </tr>`).join('')}
             </tbody>
           </table>
+          </div>
         </div>
+        ${draftRaces.length ? `<div class="card"><h3>Race Pick Order</h3><ol>${draftRaces.map(race => `<li>${race}</li>`).join('')}</ol></div>` : ''}
         ${gameBans.length ? `<div class="card"><h3>Banned Races</h3>
           <p style="color:var(--text-muted)">${gameBans.map(b => b.race).join(', ')}</p></div>` : ''}
         ${gameUnpicked.length ? `<div class="card"><h3>Not Picked</h3>

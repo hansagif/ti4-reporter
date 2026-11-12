@@ -7,12 +7,12 @@ Browser-based stats tracker for TI4 async games on Discord.
 Serve the files locally (needed for CSV fetch):
 
 ```bash
-npx serve .
+python3 serve.py
 ```
 
-Then open `http://localhost:3000/` in your browser for Season 2. Season 1 is at
-`http://localhost:3000/season1/`. The admin page is at
-`http://localhost:3000/admin.html` and always manages Season 2.
+Then open `http://127.0.0.1:3001/` in your browser for Season 2. Season 1 is at
+`http://127.0.0.1:3001/season1/`. The admin page is at
+`http://127.0.0.1:3001/admin.html` and always manages Season 2.
 Both `/admin.html` and the legacy `/season1/admin.html` redirect to
 `/season2/admin.html`. Season 1 is read-only in the app.
 
@@ -29,12 +29,50 @@ Season 2 has 13 scheduled games (G01–G13, named Meciul 1–13), with six playe
 game and six games per player. Races and results are unset, and bans are empty.
 Scheduled games appear in game reports and player history but do not count as played
 games or contribute to scores and race statistics.
-In the Season 2 admin, select one of the 13 existing games to edit races, pick
-order, speaker, bans, not-picked races, duration, status, VP, and final ranks.
-Game creation, deletion, and lineup changes are not available. Set the status to
-Ongoing when play starts, or Finished with ranks 1-6 to record results. The winner
-is derived from rank 1. Admin saves update the CSVs on the repository's main
-branch, not the local working copy.
+In the Season 2 admin, select one of the 13 existing games to report it:
+
+- **Player area:** race assignment, starting position (seat 1-6), number of turns,
+  average turn time in one `hh:mm` field (hours may exceed 23), VP, final rank,
+  and speaker. Race dropdowns are available immediately, without confirming a
+  draft first; banned races are excluded. Assignments must match the draft.
+- **Game area:** progress status, duration in days, bans, and race draft order.
+  Toggle up to six race boxes and confirm bans (zero bans is allowed). Click six
+  other race boxes in draft order and confirm, then assign those races to players.
+  Click a selected box again to remove it; later draft positions shift forward.
+  Changed selections must be confirmed again before saving. All six drafted races
+  are played this season, so there is no not-picked race input. Historical
+  not-picked records are retained when updating older games.
+- **Update game** saves partial progress. Set Ongoing when play starts.
+- **Finish game** requires confirmed bans and all six picks, six unique player
+  races and seats, turns, average turn times, VP, ranks 1-6 exactly once, and
+  duration. The winner is derived from rank 1.
+- Finished games are read-only until **Reopen game** is used. Reopening retains
+  recorded fields for correction, changes status to Ongoing, and removes the game
+  from finished-game standings until it is finished again.
+
+Game creation, deletion, and lineup changes are not available.
+On localhost, choose **Connect locally (no token)** to load and save CSVs directly
+in this checkout. This requires `python3 serve.py` (Python standard library only);
+use `--port 3002` to choose another port. The server binds to loopback only, allows
+only the two editable seasons' CSV paths, checks same-origin writes, and rejects
+stale saves. Local edits do not change GitHub until committed and pushed.
+The connection label shows which season and save mode are active.
+
+Alternatively, **Connect** with a GitHub token saves the CSVs on the repository's
+main branch, not the local working copy. Ordinary static hosting still supports
+this GitHub mode. Local mode never uses the token or sends writes to GitHub.
+The reporting script and styles are shared with the simulation admin; the page's
+season setting keeps their data paths separate.
+
+New game columns are added automatically on save, with blank values for older
+records: `starting_position`, `turns`, and `avg_turn_minutes` (total average minutes
+per turn). `draft_races` stores the confirmed race draft order, separated by `|`,
+independently of player assignments. Existing `pick_order` is derived from each
+player's race. These fields and duration appear in Game Reports; older records
+without them display dashes. Season 1 is unchanged.
+
+Run reporting validation tests with `node --test tests/admin.test.cjs` and local
+server tests with `python3 -m unittest discover -s tests -p 'test_*.py'`.
 
 ## Season 2 Scoring
 
