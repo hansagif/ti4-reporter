@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TI4 Reporter</title>
+    <link rel="stylesheet" href="faction-icons.css">
+    <script src="faction-icons.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <style>
@@ -338,9 +340,9 @@
                     <tr>
                         <th>#</th>
                         <th data-sort="player">Player</th>
+                        <th class="num" data-sort="startedGames">Started Games</th>
                         <th class="num" data-sort="finishedGames">Finished Games</th>
-                        <th class="num" data-sort="wins">Wins</th>
-                        <th class="num" data-sort="ptsPerGame">Pts/Game</th>
+                        <th>Races Played</th>
                         <th class="num" data-sort="totalPts">Total Points</th>
                     </tr>
                 </thead>
@@ -628,9 +630,10 @@
         }
 
         function renderStandings() {
-            const stats = getStandingsData('finished');
-            // Default sort by bestScore
-            if (!renderStandings._sortKey) renderStandings._sortKey = 'bestScore';
+            const stats = getStandingsData('finished').map(s => ({
+                ...s, ...standingsParticipation(gamesData, s.player)
+            }));
+            if (!renderStandings._sortKey) renderStandings._sortKey = 'totalPts';
             if (!renderStandings._sortDir) renderStandings._sortDir = -1;
             const sortKey = renderStandings._sortKey;
             const sortDir = renderStandings._sortDir;
@@ -645,9 +648,9 @@
                 return `<tr>
         <td>${i + 1}</td>
         <td>${s.player}${crown} ${stars}</td>
+        <td class="num">${s.startedGames}</td>
         <td class="num">${s.finishedGames}</td>
-        <td class="num">${s.wins}</td>
-        <td class="num">${s.ptsPerGame.toFixed(1)}</td>
+        <td>${renderFactionIcons(s.racesPlayed)}</td>
         <td class="num">${s.totalPts}</td>
       </tr>${qualLine}`;
             }).join('');

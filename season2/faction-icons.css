@@ -1,0 +1,22 @@
+.faction-icons { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.faction-icon { position: relative; display: inline-flex; cursor: help; }
+.faction-icon img { object-fit: contain; }
+.faction-icon [role="tooltip"] {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    pointer-events: none;
+}
+.faction-icon:hover [role="tooltip"],
+.faction-icon:focus [role="tooltip"] { display: block; }
+.faction-icon:focus-visible { outline: 2px solid var(--accent); }

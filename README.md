@@ -71,7 +71,7 @@ independently of player assignments. Existing `pick_order` is derived from each
 player's race. These fields and duration appear in Game Reports; older records
 without them display dashes. Season 1 is unchanged.
 
-Run reporting validation tests with `node --test tests/admin.test.cjs` and local
+Run reporting and standings tests with `node --test tests/*.test.cjs` and local
 server tests with `python3 -m unittest discover -s tests -p 'test_*.py'`.
 
 ## Season 2 Scoring
@@ -82,6 +82,18 @@ six game scores are added together, including negative scores, for a maximum of
 90 points. Season 1 retains its original scoring rules.
 All Season 2 roster players appear in the standings, including players with no
 finished games, who start with zero points.
+The standings columns are position, player (one star per finished-game win),
+Started Games (ongoing only), Finished Games, Races Played, and Total Points.
+Races Played shows each distinct assigned race from ongoing or finished games
+once, with its name in a tooltip on hover or keyboard focus. Scheduled and
+abandoned games do not count as active games or races played. Total Points counts
+finished games only and is the default descending sort.
+
+The 30 faction icons are served locally from `assets/factions/`, downloaded from
+[AsyncTI4's faction assets](https://github.com/AsyncTI4/TI4_map_generator_bot/tree/c986fb5642f5e3340bc8e01443a6029326d46056/src/main/resources/factions).
+Twilight Imperium faction artwork belongs to its respective owners; the upstream
+software license explicitly excludes art assets. No ownership of these images
+is claimed.
 
 ## Features
 
