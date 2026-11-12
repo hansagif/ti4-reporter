@@ -7,6 +7,8 @@
     <title>TI4 Reporter</title>
     <link rel="stylesheet" href="faction-icons.css">
     <script src="faction-icons.js"></script>
+    <link rel="stylesheet" href="race-preference.css">
+    <script src="race-preference.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <style>
@@ -392,6 +394,7 @@
 
         <!-- Race Stats Tab -->
         <div id="tab-races" class="tab-content">
+            <section id="race-preference" aria-label="Race draft preference"></section>
             <h2 style="margin-bottom:1rem; color:var(--text-muted); font-size:1rem;">Race Performance Overview</h2>
             <table id="race-table">
                 <thead>
@@ -546,6 +549,7 @@
             renderGamesOverview();
             renderGameSelect();
             renderRaceStats();
+            renderRacePreference(gamesData);
             renderPicksBans();
             renderPlayerSelect();
             renderProgressionChart();

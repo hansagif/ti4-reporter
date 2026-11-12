@@ -105,6 +105,12 @@ is claimed.
 - **Season 2 Games Overview** — toggle player names below the table to highlight
   games containing every selected player; clear the selection to reset
 - **Race Stats** — win rates, avg VP, sortable columns
+- **Race Draft Preference** — Race Stats includes a faction-icon heatmap of picks
+  1-6, ordered by average pick position (earlier first), with pick counts and
+  hover/focus details. Uses each ongoing or finished game's confirmed draft once,
+  even before player race assignment; older records use player pick orders.
+  Scheduled/abandoned games are excluded. This measures draft preference, not
+  faction strength; small samples should be interpreted cautiously.
 - **Standings** — player leaderboard with multiple sort options
 - **Picks & Bans** — race popularity, ban rates, performance when picked
 - **Player Sheets** — per-player history, race breakdown, stats

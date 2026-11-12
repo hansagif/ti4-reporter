@@ -1,0 +1,15 @@
+#race-preference { margin-bottom: 2rem; padding: 1.25rem; border: 1px solid var(--border); border-radius: 12px; background: linear-gradient(135deg, #172436, var(--surface) 60%); }
+.preference-heading { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.75rem; }
+.preference-heading h2 { color: var(--accent); font-size: 1.2rem; margin-bottom: 0.3rem; }
+.preference-heading p, .preference-note, .preference-empty { color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; }
+.draft-count { color: var(--accent); border: 1px solid var(--border); border-radius: 20px; padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+.preference-note { margin-bottom: 1rem; }
+.preference-scroll { overflow-x: auto; }
+.preference-table { min-width: 650px; }
+.preference-table th:not(:first-child), .preference-table td:not(:first-child) { text-align: center; }
+.preference-race { display: flex; align-items: center; gap: 0.7rem; }
+.preference-race .faction-icons { flex-shrink: 0; }
+.average-pick { font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.pick-cell { display: block; min-width: 42px; padding: 0.55rem; border-radius: 6px; background: #0d1117; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.pick-cell.has-picks { background: rgb(37 150 190 / calc(0.18 + var(--heat) * 0.72)); color: #fff; font-weight: 700; }
+.pick-cell:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
