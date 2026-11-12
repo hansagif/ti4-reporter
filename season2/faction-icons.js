@@ -19,15 +19,20 @@ function standingsParticipation(rows, player) {
         && (row.status === 'ongoing' || row.status === 'finished'));
     return {
         startedGames: played.filter(row => row.status === 'ongoing').length,
+        activeRaces: played.filter(row => row.status === 'ongoing'),
+        winningRaces: played.filter(row => row.status === 'finished' && row.winner === 'true'),
         racesPlayed: [...new Set(played.map(row => row.race).filter(Boolean))].sort()
     };
 }
 
-function renderFactionIcons(races) {
+function renderFactionIcons(races, context = '') {
     const escape = value => String(value).replace(/[&<>"']/g, c =>
         ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
-    return races.length ? `<div class="faction-icons">${races.map(race => {
-        const label = escape(race);
+    return races.length ? `<div class="faction-icons">${races.map(entry => {
+        const race = typeof entry === 'string' ? entry : entry.race;
+        const name = race || 'Race TBD';
+        const label = escape(typeof entry === 'string' ? name
+            : `${context}: ${name} - ${entry.game_name || entry.game_id}`);
         const icon = FACTION_ICONS[race];
         return icon
             ? `<span class="faction-icon" tabindex="0" aria-label="${label}"><img src="../assets/factions/${icon}.png" alt="${label}" width="30" height="30"><span role="tooltip">${label}</span></span>`

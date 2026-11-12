@@ -82,8 +82,12 @@ six game scores are added together, including negative scores, for a maximum of
 90 points. Season 1 retains its original scoring rules.
 All Season 2 roster players appear in the standings, including players with no
 finished games, who start with zero points.
-The standings columns are position, player (one star per finished-game win),
-Started Games (ongoing only), Finished Games, Races Played, and Total Points.
+The standings columns are position, player (one winning race icon per
+finished-game win), Started Games (one race icon per ongoing game), Finished
+Games, Races Played, and Total Points. Winning and active race icons retain
+duplicates for separate games; their tooltips identify the game and race.
+Ongoing games without an assigned race show "Race TBD" with the game name.
+Started Games can still be sorted by the number of ongoing games.
 Races Played shows each distinct assigned race from ongoing or finished games
 once, with its name in a tooltip on hover or keyboard focus. Scheduled and
 abandoned games do not count as active games or races played. Total Points counts

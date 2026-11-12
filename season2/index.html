@@ -642,13 +642,12 @@
 
             const tbody = document.querySelector('#standings-table tbody');
             tbody.innerHTML = stats.map((s, i) => {
-                const stars = '⭐'.repeat(s.wins);
                 const crown = s.wins >= 6 ? ' 👑' : '';
                 const qualLine = i === 5 ? '<tr><td colspan="6" style="border-bottom:2px solid var(--accent2); padding:0;"></td></tr>' : '';
                 return `<tr>
         <td>${i + 1}</td>
-        <td>${s.player}${crown} ${stars}</td>
-        <td class="num">${s.startedGames}</td>
+        <td><div class="player-wins">${s.player}${crown}${s.winningRaces.length ? renderFactionIcons(s.winningRaces, 'Won') : ''}</div></td>
+        <td>${renderFactionIcons(s.activeRaces, 'Playing')}</td>
         <td class="num">${s.finishedGames}</td>
         <td>${renderFactionIcons(s.racesPlayed)}</td>
         <td class="num">${s.totalPts}</td>

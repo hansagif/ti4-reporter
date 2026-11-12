@@ -23,7 +23,7 @@ function setup(season) {
 }
 
 for (const season of ['season2', 'season2-simulation']) {
-    test(`${season}: exact six columns, started counts, unique races, stars and finished-only points`, () => {
+    test(`${season}: six columns, winning and active icons, unique played races and finished-only points`, () => {
         const { run, tbody, html } = setup(season);
         const header = html.match(/<table id="standings-table">([\s\S]*?)<\/thead>/)[1];
         assert.equal((header.match(/<th[ >]/g) || []).length, 6);
@@ -40,15 +40,33 @@ for (const season of ['season2', 'season2-simulation']) {
             ];
             renderStandings();
         `);
-        assert.match(tbody.innerHTML, /Alice.*⭐{2}/u);
-        assert.match(tbody.innerHTML, /class="num">1<\/td>\s*<td class="num">2<\/td>/);
-        assert.equal((tbody.innerHTML.match(/<img /g) || []).length, 2);
+        assert.doesNotMatch(tbody.innerHTML, /⭐/u);
+        assert.equal((tbody.innerHTML.match(/<img /g) || []).length, 5);
+        assert.equal((tbody.innerHTML.match(/role="tooltip">Won: Arborec/g) || []).length, 2);
+        assert.equal((tbody.innerHTML.match(/role="tooltip">Playing: Nomad/g) || []).length, 1);
         assert.match(tbody.innerHTML, /role="tooltip">Arborec/);
         assert.match(tbody.innerHTML, /role="tooltip">Nomad/);
         assert.doesNotMatch(tbody.innerHTML, /Winnu|Crimson/);
         assert.match(tbody.innerHTML, /class="num">30<\/td>/);
         assert.match(tbody.innerHTML, /Bob/);
         assert.equal(run('renderStandings._sortKey'), 'totalPts');
+    });
+
+    test(`${season}: active race icons retain duplicate games and show unassigned races explicitly`, () => {
+        const { run } = setup(season);
+        const result = run(`standingsParticipation([
+            {player_name:'Alice', status:'ongoing', race:'Nomad', game_id:'G01'},
+            {player_name:'Alice', status:'ongoing', race:'Nomad', game_id:'G02'},
+            {player_name:'Alice', status:'ongoing', race:'', game_id:'G03'},
+            {player_name:'Bob', status:'ongoing', race:'Arborec', game_id:'G04'}
+        ], 'Alice')`);
+        assert.equal(result.startedGames, 3);
+        assert.equal(result.activeRaces.length, 3);
+        const rendered = run(`renderFactionIcons(${JSON.stringify(result.activeRaces)}, 'Playing')`);
+        assert.equal((rendered.match(/<img /g) || []).length, 2);
+        assert.match(rendered, /Playing: Nomad - G01/);
+        assert.match(rendered, /Playing: Nomad - G02/);
+        assert.match(rendered, /Race TBD - G03/);
     });
 }
 

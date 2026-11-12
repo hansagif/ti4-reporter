@@ -1,4 +1,5 @@
 .faction-icons { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.player-wins { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
 .faction-icon { position: relative; display: inline-flex; cursor: help; }
 .faction-icon img { object-fit: contain; }
 .faction-icon [role="tooltip"] {
